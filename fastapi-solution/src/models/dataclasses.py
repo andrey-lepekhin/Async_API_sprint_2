@@ -10,7 +10,7 @@ class Genre(BaseModel):
     name: str
 
 
-class PersonShow(BaseModel):
+class Person(BaseModel):
     id: UUID4 = Field(alias="uuid")
     name: str = Field(alias="full_name")
 
@@ -21,11 +21,11 @@ class Show(BaseModel):
     imdb_rating: float
     description: Optional[str] = None
     genre: List[Genre]
-    actors: Optional[List[PersonShow]] = None
-    writers: Optional[List[PersonShow]] = Field(default_factory=list)
-    directors: Optional[List[PersonShow]] = Field(default_factory=list)
+    actors: Optional[List[Person]] = None
+    writers: Optional[List[Person]] = Field(default_factory=list)
+    directors: Optional[List[Person]] = Field(default_factory=list)
 
 
-class Person(PersonShow):
+class PersonShow(Person):
     role: List[str]
     film_ids: List[UUID4]
