@@ -2,10 +2,6 @@ version: '3.8'
 volumes:
   static:
 
-networks:
-  movies_network:
-    driver: bridge
-
 services:
 
   elasticsearch:
