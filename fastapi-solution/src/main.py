@@ -24,7 +24,6 @@ app = FastAPI(
 @app.on_event('startup')
 async def startup():
     elastic.es = AsyncElasticsearch(hosts=[f'http://{config.ELASTIC_HOST}:{config.ELASTIC_PORT}'])
-    await es_indexes.create_indexes(elastic.es) # TODO: is it needed if we assume already configured index?
     redis.redis = aioredis.from_url(
         f'redis://{config.REDIS_HOST}:{config.REDIS_PORT}',
         max_connections=10,
