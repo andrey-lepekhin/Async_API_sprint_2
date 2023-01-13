@@ -1,7 +1,11 @@
 import logging
 
 import aioredis
-import uvicorn as uvicorn
+import uvicorn
+from api.v1 import shows
+from core import config
+from core.logger import LOGGING
+from db import elastic, es_indexes, redis
 from elasticsearch import AsyncElasticsearch
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
@@ -32,4 +36,6 @@ if __name__ == '__main__':
         'main:app',
         host='0.0.0.0',
         port=8000,
+        log_config=LOGGING,
+        log_level=logging.DEBUG,
     )
