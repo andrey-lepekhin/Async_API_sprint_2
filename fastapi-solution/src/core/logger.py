@@ -6,6 +6,8 @@ LOG_DEFAULT_HANDLERS = ['console', ]
 # https://docs.python.org/3/howto/logging.html
 # https://docs.python.org/3/howto/logging-cookbook.html
 
+# TODO: узнать про асинхронное логгирование, возможно приделать его
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,

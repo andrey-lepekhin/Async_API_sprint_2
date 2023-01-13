@@ -2,6 +2,10 @@ import os
 from logging import config as logging_config
 
 from core.logger import LOGGING
+from dotenv import find_dotenv, load_dotenv
+
+# Raise error if no .env file found
+load_dotenv(find_dotenv(raise_error_if_not_found=False))
 
 # Применяем настройки логирования
 logging_config.dictConfig(LOGGING)
