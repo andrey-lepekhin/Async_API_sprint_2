@@ -1,65 +1,39 @@
 import logging
 
+import aioredis
 import uvicorn as uvicorn
+from elasticsearch import AsyncElasticsearch
+from fastapi import FastAPI
+from fastapi.responses import ORJSONResponse
+
+from core import config
+from core.logger import LOGGING
+from db import elastic
+from db import redis
+
+app = FastAPI(
+    title=config.PROJECT_NAME,
+    docs_url='/api/openapi',
+    openapi_url='/api/openapi.json',
+    default_response_class=ORJSONResponse,
+)
 
 
-LOG_FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-LOG_DEFAULT_HANDLERS = ['console']
+@app.on_event('startup')
+async def startup():
+    # Подключаемся к базам при старте сервера
+    # Подключиться можем при работающем event-loop
+    # Поэтому логика подключения происходит в асинхронной функции
+    redis.redis = await aioredis.create_redis_pool((config.REDIS_HOST, config.REDIS_PORT), minsize=10, maxsize=20)
+    elastic.es = AsyncElasticsearch(hosts=[f'{config.ELASTIC_HOST}:{config.ELASTIC_PORT}'])
 
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'verbose': {
-            'format': LOG_FORMAT,
-        },
-        'default': {
-            '()': 'uvicorn.logging.DefaultFormatter',
-            'fmt': '%(levelprefix)s %(message)s',
-            'use_colors': None,
-        },
-        'access': {
-            '()': 'uvicorn.logging.AccessFormatter',
-            'fmt': "%(levelprefix)s %(client_addr)s - '%(request_line)s' %(status_code)s",
-        },
-    },
-    'handlers': {
-        'console': {
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
-            'formatter': 'verbose',
-        },
-        'default': {
-            'formatter': 'default',
-            'class': 'logging.StreamHandler',
-            'stream': 'ext://sys.stdout',
-        },
-        'access': {
-            'formatter': 'access',
-            'class': 'logging.StreamHandler',
-            'stream': 'ext://sys.stdout',
-        },
-    },
-    'loggers': {
-        '': {
-            'handlers': LOG_DEFAULT_HANDLERS,
-            'level': 'INFO',
-        },
-        'uvicorn.error': {
-            'level': 'INFO',
-        },
-        'uvicorn.access': {
-            'handlers': ['access'],
-            'level': 'INFO',
-            'propagate': False,
-        },
-    },
-    'root': {
-        'level': 'INFO',
-        'formatter': 'verbose',
-        'handlers': LOG_DEFAULT_HANDLERS,
-    },
-}
+
+@app.on_event('shutdown')
+async def shutdown():
+    # Отключаемся от баз при выключении сервера
+    await redis.redis.close()
+    await elastic.es.close()
+
 
 if __name__ == '__main__':
     uvicorn.run(
