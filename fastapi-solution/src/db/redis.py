@@ -1,10 +1,8 @@
 from typing import Optional
 
-from aioredis import Redis
+from redis import asyncio as aioredis
 
-redis: Optional[Redis] = None
+redis: Optional[aioredis.Redis] = None
 
-
-# Функция понадобится при внедрении зависимостей
-async def get_redis() -> Redis:
+async def get_redis() -> aioredis.Redis:
     return redis

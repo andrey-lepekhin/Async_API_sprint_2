@@ -11,7 +11,7 @@ load_dotenv(find_dotenv(raise_error_if_not_found=False))
 logging_config.dictConfig(LOGGING)
 
 # Название проекта. Используется в Swagger-документации
-PROJECT_NAME = os.getenv('PROJECT_NAME', 'movies')
+PROJECT_NAME = os.getenv('PROJECT_NAME', 'Practix')
 
 # Настройки Redis
 REDIS_HOST = os.getenv('REDIS_HOST', '127.0.0.1')
@@ -23,6 +23,8 @@ ELASTIC_PORT = int(os.getenv('ELASTIC_PORT', 9200))
 
 # Корень проекта
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+API_V1_BASE_ROUTE = '/api/v1'
+
 SHOW_CACHE_EXPIRE_IN_SECONDS = os.getenv('SHOW_CACHE_EXPIRE_IN_SECONDS', 5*60)
 
 SHOW_INDEX_NAME = 'shows'

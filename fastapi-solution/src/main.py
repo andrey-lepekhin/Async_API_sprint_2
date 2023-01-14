@@ -1,16 +1,17 @@
 import logging
-import os
-import aioredis
+
 import uvicorn
+from api.v1.api import api_router as api_router_v1
+from core import config
+from core.config import API_V1_BASE_ROUTE
+from core.logger import LOGGING
+from db import elastic, es_indexes, redis
 from elasticsearch import AsyncElasticsearch
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
-
-from api.v1 import genres
-from core import config
-from core.logger import LOGGING
-from db import elastic, redis
-
+from fastapi_cache import FastAPICache
+from fastapi_cache.backends.redis import RedisBackend
+from redis import asyncio as aioredis
 
 app = FastAPI(
     title=config.PROJECT_NAME,
@@ -22,19 +23,25 @@ app = FastAPI(
 
 @app.on_event('startup')
 async def startup():
-    redis.redis = await aioredis.create_redis_pool((config.REDIS_HOST, config.REDIS_PORT), minsize=10, maxsize=20)
     elastic.es = AsyncElasticsearch(hosts=[f'http://{config.ELASTIC_HOST}:{config.ELASTIC_PORT}'])
+    await es_indexes.create_indexes(elastic.es) # TODO: is it needed if we assume already configured index?
+    redis.redis = aioredis.from_url(
+        f'redis://{config.REDIS_HOST}:{config.REDIS_PORT}',
+        max_connections=10,
+        encoding="utf8",
+        decode_responses=True,
+    )
+    FastAPICache.init(RedisBackend(redis.redis), prefix="fastapi-cache")
 
 
 @app.on_event('shutdown')
 async def shutdown():
-    redis.redis.close()
+    await redis.redis.close()
     await redis.redis.wait_closed()
     await elastic.es.close()
 
 
-app.include_router(genres.router, prefix='/api/v1/genres', tags=['genres'])
-
+app.include_router(api_router_v1, prefix=API_V1_BASE_ROUTE)
 
 if __name__ == '__main__':
     uvicorn.run(
