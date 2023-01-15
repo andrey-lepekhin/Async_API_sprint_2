@@ -2,8 +2,8 @@ from functools import lru_cache
 from typing import Optional
 
 from aioredis import Redis
+from core.config import SHOW_INDEX_NAME
 from db.elastic import get_elastic
-from db.es_indexes import SHOW_INDEX_NAME
 from db.redis import get_redis
 from elasticsearch import AsyncElasticsearch, NotFoundError
 from fastapi import Depends
