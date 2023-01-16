@@ -21,6 +21,14 @@ class GenreService:
     def __init__(self, elastic: AsyncElasticsearch):
         self.elastic = elastic
 
+    async def all_genres(self, **kwargs) -> List[Optional[Genre]]:
+        genres = get_genre_service(**kwargs)
+        if not genres:
+            genres = await self._get_genre_from_elastic(**kwargs)
+            if not genres:
+                return []
+        return genres
+
     async def get_by_id(self, genre_id: str) -> Optional[Genre]:
         """
         Gets a single show by its ID from ES.
@@ -42,7 +50,6 @@ class GenreService:
 
 @lru_cache()
 def get_genre_service(
-    redis: Redis = Depends(get_redis),
     elastic: AsyncElasticsearch = Depends(get_elastic),
 ) -> GenreService:
-    return GenreService(redis, elastic)
+    return GenreService(elastic)
