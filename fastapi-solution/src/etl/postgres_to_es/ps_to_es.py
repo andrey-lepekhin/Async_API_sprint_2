@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import logging
 from typing import List, Optional
 
 from pydantic import BaseModel, Field

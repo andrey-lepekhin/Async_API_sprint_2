@@ -2,15 +2,12 @@ import logging
 from functools import lru_cache
 from typing import List, Optional
 
-import orjson
-from aioredis import Redis
 from elasticsearch import AsyncElasticsearch, NotFoundError
 from fastapi import Depends
 
-from src.db.elastic import get_elastic
-from src.db.redis import get_redis
-from src.models.genre import Genre
-from db.es_indexes import SHOW_INDEX_NAME
+from db.elastic import get_elastic
+from db.es_indexes import SHOW_INDEX_NAME, GENRE_INDEX_NAME
+from models.genre import Genre
 
 GENRE_CACHE_EXPIRE_IN_SECONDS = 60 * 5
 
@@ -42,7 +39,7 @@ class GenreService:
 
     async def _get_genre_from_elastic(self, genre_id: str) -> Optional[List[Genre]]:
         try:
-            doc = await self.elastic.get(index=SHOW_INDEX_NAME, id=genre_id)
+            doc = await self.elastic.get(index=GENRE_INDEX_NAME, id=genre_id)
         except NotFoundError:
             return None
         return Genre(**doc['_source'])

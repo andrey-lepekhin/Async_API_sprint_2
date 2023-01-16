@@ -6,7 +6,6 @@ import time
 import psycopg2
 from elasticsearch import Elasticsearch
 from elasticsearch.helpers import streaming_bulk
-from psycopg2.extensions import connection
 from psycopg2.extras import RealDictCursor
 
 from backoff import my_backoff
