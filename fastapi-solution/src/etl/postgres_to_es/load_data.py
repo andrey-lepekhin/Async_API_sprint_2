@@ -11,7 +11,7 @@ from psycopg2.extras import RealDictCursor
 from backoff import my_backoff
 from db_query import load_film_id
 from settings import dsl
-from ps_to_es import es_create_index, generate_actions
+from ps_to_es import generate_actions, es_create_show_index, es_create_genre_index
 from sqlite_functions import get_lsl_from_sqlite, save_to_sqlite
 
 logger = logging.getLogger(__name__)
@@ -75,7 +75,8 @@ def main(pg_connection: psycopg2.extensions.connection, es_client: Elasticsearch
         # Размер состояния, которое будет передано в Elastic
         pg_cursor.itersize = int(os.environ.get('BULK_SIZE', 1000))
         logger.info('Создание индекса')
-        es_create_index(es_client)
+        es_create_show_index(es_client)
+        es_create_genre_index(es_client)
 
         logger.info('Перенос индекса')
         i = 0

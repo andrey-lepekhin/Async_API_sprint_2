@@ -2,11 +2,13 @@ import logging
 from functools import lru_cache
 from typing import List, Optional
 
+from aioredis import Redis
 from elasticsearch import AsyncElasticsearch, NotFoundError
 from fastapi import Depends
 
+from core.config import GENRE_INDEX_NAME
 from db.elastic import get_elastic
-from db.es_indexes import SHOW_INDEX_NAME, GENRE_INDEX_NAME
+from db.redis import get_redis
 from models.genre import Genre
 
 GENRE_CACHE_EXPIRE_IN_SECONDS = 60 * 5
@@ -47,6 +49,7 @@ class GenreService:
 
 @lru_cache()
 def get_genre_service(
+    redis: Redis = Depends(get_redis),
     elastic: AsyncElasticsearch = Depends(get_elastic),
 ) -> GenreService:
-    return GenreService(elastic)
+    return GenreService(redis, elastic)

@@ -7,7 +7,7 @@ from pydantic import BaseModel, UUID4
 
 from models.mixins import UUIDMixin
 from services.genre import GenreService, get_genre_service
-from services.show import ShowService, get_show_service
+# from services.show import ShowService, get_show_service
 from models.genre import Genre
 
 from core.config import SHOW_CACHE_EXPIRE_IN_SECONDS
@@ -29,6 +29,7 @@ class SingleGenreAPIResponse(Genre):
 
 # Pydantic supports the creation of generic models to make it easier to reuse a common model structure
 @router.get('/', response_model=List[GenreAPI])
+@cache(expire=SHOW_CACHE_EXPIRE_IN_SECONDS)
 async def genre_list(
     page_size: int = Query(10, description='Number of genres on page'),
     page: int = Query(1, description='Page number'),
@@ -45,6 +46,7 @@ async def genre_list(
 
 
 @router.get('/search', response_model=List[GenreAPI])
+@cache(expire=SHOW_CACHE_EXPIRE_IN_SECONDS)
 async def genre_search(
     page_size: int = Query(10, description='Number of genres on page'),
     page: int = Query(1, description='Page number'),
@@ -84,8 +86,14 @@ async def genre_details(
 @router.get('', response_model=ListGenreAPI)
 @cache(expire=SHOW_CACHE_EXPIRE_IN_SECONDS)
 async def genre_list(
-        query: str = None,
+        page_size: int = Query(10, description='Number of genres on page'),
+        page: int = Query(1, description='Page number'),
+        sort: str = Query('', description='Sorting fields (A comma-separated list '
+                                      'of "field":"direction(=asc|desc)" '
+                                      'pairs. Example: name:description)'),
+        query: str = Query(None, description='Part of the name'),
         genre_service: GenreService = Depends(get_genre_service),
-) -> ListGenreAPI:
+) -> List[ListGenreAPI]:
     # TODO: Implement filters and sorting
-    return ListGenreAPI()
+    genres = await genre_service.all(page_size=page_size, page=page, sort=sort, query=query)
+    return [ListGenreAPI.parse_obj(genre.dict(by_alias=True)) for genre in genres]

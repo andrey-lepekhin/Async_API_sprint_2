@@ -24,3 +24,47 @@ ELASTIC_PORT = int(os.getenv('ELASTIC_PORT', 9200))
 # Корень проекта
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SHOW_CACHE_EXPIRE_IN_SECONDS = os.getenv('SHOW_CACHE_EXPIRE_IN_SECONDS', 5*60)
+
+SHOW_INDEX_NAME = 'shows'
+GENRE_INDEX_NAME = 'genres'
+
+SETTINGS = {
+    'refresh_interval': '1s',
+    'analysis': {
+        'filter': {
+            'english_stop': {
+                'type': 'stop',
+                'stopwords': '_english_',
+            },
+            'english_stemmer': {
+                'type': 'stemmer',
+                'language': 'english',
+            },
+            'english_possessive_stemmer': {
+                'type': 'stemmer',
+                'language': 'possessive_english',
+            },
+            'russian_stop': {
+                'type': 'stop',
+                'stopwords': '_russian_',
+            },
+            'russian_stemmer': {
+                'type': 'stemmer',
+                'language': 'russian',
+            },
+        },
+        'analyzer': {
+            'ru_en': {
+                'tokenizer': 'standard',
+                'filter': [
+                    'lowercase',
+                    'english_stop',
+                    'english_stemmer',
+                    'english_possessive_stemmer',
+                    'russian_stop',
+                    'russian_stemmer',
+                ],
+            },
+        },
+    },
+}
