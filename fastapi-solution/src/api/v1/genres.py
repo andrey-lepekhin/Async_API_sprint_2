@@ -5,8 +5,8 @@ from fastapi import APIRouter, Depends, Query, HTTPException
 from fastapi_cache.decorator import cache
 from pydantic import BaseModel, UUID4
 
-from src.models.mixins import UUIDMixin
-from src.services.genre import GenreService, get_genre_service
+from models.mixins import UUIDMixin
+from services.genre import GenreService, get_genre_service
 from services.show import ShowService, get_show_service
 from models.genre import Genre
 
@@ -24,7 +24,7 @@ class ListGenreAPI(UUIDMixin, BaseModel):
 
 
 class SingleGenreAPIResponse(Genre):
-    pass  # Assuming no internal information in Show model, so we don't need to cut anything out
+    pass  # Assuming no internal information in Genre model, so we don't need to cut anything out
 
 
 # Pydantic supports the creation of generic models to make it easier to reuse a common model structure
@@ -65,27 +65,27 @@ async def genre_search(
 
 @router.get('/{genre_id}', response_model=SingleGenreAPIResponse)
 @cache(expire=SHOW_CACHE_EXPIRE_IN_SECONDS)
-async def show_details(
-        show_id: str,
-        show_service: ShowService = Depends(get_show_service),
+async def genre_details(
+        genre_id: str,
+        genre_service: GenreService = Depends(get_genre_service),
 ) -> SingleGenreAPIResponse:
     """
-    Gets a single show by its ID.
-    :param show_id:
-    :param show_service:
+    Gets a single genre by its ID.
+    :param genre_id:
+    :param genre_service:
     :return:
     """
-    show = await show_service.get_by_id(show_id)
-    if not show:
-        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail='show not found')
-    return SingleGenreAPIResponse(**show.dict())
+    genre = await genre_service.get_by_id(genre_id)
+    if not genre:
+        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail='genre not found')
+    return SingleGenreAPIResponse(**genre.dict())
 
 
 @router.get('', response_model=ListGenreAPI)
 @cache(expire=SHOW_CACHE_EXPIRE_IN_SECONDS)
-async def show_list(
+async def genre_list(
         query: str = None,
-        show_service: ShowService = Depends(get_show_service),
+        genre_service: GenreService = Depends(get_genre_service),
 ) -> ListGenreAPI:
     # TODO: Implement filters and sorting
     return ListGenreAPI()

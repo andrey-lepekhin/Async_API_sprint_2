@@ -21,7 +21,7 @@ class GenreService:
     def __init__(self, elastic: AsyncElasticsearch):
         self.elastic = elastic
 
-    async def all_genres(self, **kwargs) -> List[Optional[Genre]]:
+    async def all(self, **kwargs) -> List[Optional[Genre]]:
         genres = get_genre_service(**kwargs)
         if not genres:
             genres = await self._get_genre_from_elastic(**kwargs)
@@ -31,8 +31,8 @@ class GenreService:
 
     async def get_by_id(self, genre_id: str) -> Optional[Genre]:
         """
-        Gets a single show by its ID from ES.
-        :param show_id:
+        Gets a single genre by its ID from ES.
+        :param genre_id:
         :return:
         """
         genre = await self._get_genre_from_elastic(genre_id)
