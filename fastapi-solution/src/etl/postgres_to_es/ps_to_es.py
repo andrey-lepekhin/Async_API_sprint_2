@@ -4,7 +4,7 @@ from typing import List, Optional
 
 from pydantic import BaseModel, Field
 
-from core.config import SHOW_INDEX_NAME, SETTINGS, GENRE_INDEX_NAME
+from settings import SHOW_INDEX_NAME, SETTINGS, GENRE_INDEX_NAME
 from db_query import full_load
 
 

@@ -1,5 +1,5 @@
 import logging
-
+import os
 import aioredis
 import uvicorn
 from elasticsearch import AsyncElasticsearch
@@ -39,8 +39,11 @@ app.include_router(genres.router, prefix='/api/v1/genres', tags=['genres'])
 if __name__ == '__main__':
     uvicorn.run(
         'main:app',
-        host='0.0.0.0',
-        port=8000,
+        host=os.environ.get('REDIS_HOST'),
+        port=os.environ.get('REDIS_PORT'),
         log_config=LOGGING,
         log_level=logging.DEBUG,
     )
+    # For hiding uvicorn propagates
+    logger = logging.getLogger('uvicorn.error')
+    logger.propagate = False

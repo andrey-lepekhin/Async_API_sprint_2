@@ -10,6 +10,6 @@ COPY requirements.txt .
 RUN pip3 install --upgrade pip \
     & pip3 install -r requirements.txt --no-cache-dir
 
-COPY fastapi-solution .
+COPY . .
 
-CMD ["python", "-m", "fastapi-solution/src/main.py"]
+CMD python fastapi-solution/src/main.py
