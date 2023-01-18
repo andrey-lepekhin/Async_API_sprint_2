@@ -1,6 +1,8 @@
 from typing import List, Optional, Union
 
 import orjson
+from api.utils import BaseSortFilter
+from fastapi import Query
 from models.common_models import Genre, Person
 from pydantic import UUID4, BaseModel, Field
 
@@ -25,3 +27,15 @@ class Show(BaseModel):
         # Заменяем стандартную работу с json на более быструю
         json_loads = orjson.loads
         json_dumps = orjson_dumps
+
+class ShowGenreFilter:
+    def __init__(
+            self,
+            genre_id: UUID4 = Query(None, alias="filter[genre]"),
+    ):
+        self.genre_id = genre_id
+
+class ShowSortFilter(BaseSortFilter):
+
+    class Config:
+        allowed_filter_field_names = ['imdb_rating']
