@@ -13,6 +13,10 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data/
       - ./fastapi-solution/src/etl/postgres_to_es/movies_dmp.sql:/docker-entrypoint-initdb.d/movies_dmp.sql
+    environment:
+      POSTGRES_DB: movies_database
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: 123qwe
 
   elasticsearch:
     container_name: elasticsearch
@@ -64,3 +68,5 @@ services:
       - redis
     env_file:
       - ./fastapi-solution/src/core/.env
+    ports:
+      - "8000:8000"

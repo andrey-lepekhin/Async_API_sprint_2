@@ -39,11 +39,8 @@ app.include_router(genres.router, prefix='/api/v1/genres', tags=['genres'])
 if __name__ == '__main__':
     uvicorn.run(
         'main:app',
-        host=os.environ.get('REDIS_HOST'),
-        port=os.environ.get('REDIS_PORT'),
+        host=os.environ.get('SERVER_HOST'),
+        port=int(os.environ.get('SERVER_PORT')),
         log_config=LOGGING,
         log_level=logging.DEBUG,
     )
-    # For hiding uvicorn propagates
-    logger = logging.getLogger('uvicorn.error')
-    logger.propagate = False
