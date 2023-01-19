@@ -1,7 +1,6 @@
 import logging
 import os
 
-import aioredis
 import uvicorn
 from api.v1.api import api_router as api_router_v1
 from core import config
@@ -25,7 +24,6 @@ app = FastAPI(
 
 @app.on_event('startup')
 async def startup():
-    redis.redis = await aioredis.create_redis_pool((config.REDIS_HOST, config.REDIS_PORT), minsize=10, maxsize=20)
     elastic.es = AsyncElasticsearch(hosts=[f'http://{config.ELASTIC_HOST}:{config.ELASTIC_PORT}'])
     redis.redis = aioredis.from_url(
         f'redis://{config.REDIS_HOST}:{config.REDIS_PORT}',
@@ -39,7 +37,6 @@ async def startup():
 @app.on_event('shutdown')
 async def shutdown():
     await redis.redis.close()
-    await redis.redis.wait_closed()
     await elastic.es.close()
 
 
