@@ -149,12 +149,13 @@ async def es_create_person_index(client):
 
 class Person(BaseModel):
     id: str
-    full_name: str
+    full_name: Optional[str] = None
 
 
 class Genre(BaseModel):
     id: str
-    name: str
+    name: Optional[str] = None
+    description: Optional[str] = None
 
 
 class EsDataclass(BaseModel):
@@ -169,6 +170,17 @@ class EsDataclass(BaseModel):
     writers_names: Optional[List[str]] = None
     actors: Optional[List[Person]] = None
     writers: Optional[List[Person]] = None
+
+
+class EsDataclassGenre(BaseModel):
+    id: str
+    title: Optional[str] = None
+    description: Optional[str] = None
+
+
+class EsDataclassPerson(BaseModel):
+    id: str
+    full_name: Optional[str] = None
 
 
 def validate_row_create_es_doc(row):
@@ -212,8 +224,42 @@ def validate_row_create_es_doc(row):
     ).dict(by_alias=True)
 
 
+def validate_row_create_es_doc_genre(row):
+    """Метод преобразования жанров из PG в ES построчно"""
+    for g in row['genres']:
+        yield {
+            'id': (g.split(':::'))[0],
+            'name': (g.split(':::'))[1],
+            'description': (g.split(':::'))[2],
+        }
+
+
+def validate_row_create_es_doc_person(row):
+    """Метод преобразования данных из PG в ES построчно"""
+
+    for p in row['persons']:
+        yield {
+            'id': (p.split(':::'))[0],
+            'full_name': (p.split(':::'))[1]
+        }
+
+
 def generate_actions(pg_cursor, last_successful_load):
     """Метод сборки данных об обновленных фильмах"""
     pg_cursor.execute(full_load.format(last_successful_load))
     for row in pg_cursor:
         yield validate_row_create_es_doc(row)
+
+
+def generate_genre_actions(pg_cursor, last_successful_load):
+    """Метод сборки данных об обновленных жанрах"""
+    pg_cursor.execute(full_load.format(last_successful_load))
+    for row in pg_cursor:
+        yield validate_row_create_es_doc_genre(row)
+
+
+def generate_person_actions(pg_cursor, last_successful_load):
+    """Метод сборки данных об обновленных персонах"""
+    pg_cursor.execute(full_load.format(last_successful_load))
+    for row in pg_cursor:
+        yield validate_row_create_es_doc_person(row)

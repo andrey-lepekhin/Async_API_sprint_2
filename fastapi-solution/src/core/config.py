@@ -28,6 +28,7 @@ API_V1_BASE_ROUTE = '/api/v1'
 CACHE_EXPIRE_IN_SECONDS = int(os.getenv('CACHE_EXPIRE_IN_SECONDS', 5*60))
 SHOW_INDEX_NAME = 'shows'
 GENRE_INDEX_NAME = 'genres'
+PERSON_INDEX_NAME = 'persons'
 
 SETTINGS = {
     'refresh_interval': '1s',

@@ -20,7 +20,7 @@ class SinglePersonAPIResponse(Person):
 
 
 # Pydantic supports the creation of generic models to make it easier to reuse a common model structure
-@router.get('/', response_model=List[Person])
+@router.get('', response_model=Optional[List[Person]])
 @cache(expire=CACHE_EXPIRE_IN_SECONDS)
 async def person_list(
         person_sort_filter: PersonSortFilter = Depends(),

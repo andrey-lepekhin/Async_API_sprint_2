@@ -12,10 +12,10 @@ from ps_to_es import (
     es_create_genre_index,
     es_create_show_index,
     generate_actions,
-    es_create_person_index
+    es_create_person_index, generate_genre_actions, generate_person_actions
 )
 from psycopg2.extras import RealDictCursor
-from settings import SHOW_INDEX_NAME, dsl
+from settings import SHOW_INDEX_NAME, GENRE_INDEX_NAME, dsl, PERSON_INDEX_NAME
 from sqlite_functions import get_lsl_from_sqlite, save_to_sqlite
 
 logger = logging.getLogger(__name__)
@@ -78,14 +78,10 @@ def main(pg_connection: psycopg2.extensions.connection, es_client: Elasticsearch
         pg_cursor = pg_connection.cursor()
         # Размер состояния, которое будет передано в Elastic
         pg_cursor.itersize = int(os.environ.get('BULK_SIZE', 1000))
-        logger.info('Создание индекса')
-        es_create_show_index(es_client)
-        es_create_genre_index(es_client)
-        es_create_person_index(es_client)
 
-        logger.info('Перенос индекса')
-        i = 0
-        streaming_blk = streaming_bulk(
+        logger.info('Создание индекса shows')
+        es_create_show_index(es_client)
+        streaming_blk_shows = streaming_bulk(
             client=es_client,
             index=SHOW_INDEX_NAME,
             actions=generate_actions(pg_cursor, last_successful_load),
@@ -93,7 +89,27 @@ def main(pg_connection: psycopg2.extensions.connection, es_client: Elasticsearch
             initial_backoff=0.1,
             max_backoff=10,
         )
-        for ok, response in streaming_blk:
+        es_create_genre_index(es_client)
+        streaming_blk_genres = streaming_bulk(
+            client=es_client,
+            index=GENRE_INDEX_NAME,
+            actions=generate_genre_actions(pg_cursor, last_successful_load),
+            max_retries=100,
+            initial_backoff=0.1,
+            max_backoff=10,
+        )
+        es_create_person_index(es_client)
+        streaming_blk_persons = streaming_bulk(
+            client=es_client,
+            index=PERSON_INDEX_NAME,
+            actions=generate_person_actions(pg_cursor, last_successful_load),
+            max_retries=100,
+            initial_backoff=0.1,
+            max_backoff=10,
+        )
+
+        i = 0
+        for ok, response in streaming_blk_shows:
             if not ok:
                 logger.error('Ошибка при передаче данных')
             logger.debug(response)
