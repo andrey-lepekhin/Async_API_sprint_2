@@ -12,10 +12,9 @@ def orjson_dumps(v, *, default):
     return orjson.dumps(v, default=default).decode()
 
 
-class Genre(BaseModel):
+class Person(BaseModel):
     id: Union[UUID4, str]  # TODO: Redis.set fails if this is just UUID4, fix it?
-    name: Optional[str] = None
-    description: Optional[str] = None
+    full_name: Optional[str] = None
 
     class Config:
         # Заменяем стандартную работу с json на более быструю
@@ -23,7 +22,7 @@ class Genre(BaseModel):
         json_dumps = orjson_dumps
 
 
-class GenreSortFilter(BaseSortFilter):
+class PersonSortFilter(BaseSortFilter):
 
     class Config:
-        allowed_filter_field_names = ['name', ]
+        allowed_filter_field_names = ['full_name', ]

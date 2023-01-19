@@ -15,6 +15,7 @@ dsl = {
 
 SHOW_INDEX_NAME = 'shows'
 GENRE_INDEX_NAME = 'genres'
+PERSON_INDEX_NAME = 'persons'
 
 SETTINGS = {
     'refresh_interval': '1s',
