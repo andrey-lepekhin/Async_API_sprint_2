@@ -4,7 +4,7 @@ from typing import List, Optional
 
 from db_query import full_load
 from pydantic import BaseModel, Field
-from settings import GENRE_INDEX_NAME, SETTINGS, SHOW_INDEX_NAME
+from settings import GENRE_INDEX_NAME, SETTINGS, SHOW_INDEX_NAME, PERSON_INDEX_NAME
 
 
 async def es_create_show_index(client):
@@ -114,6 +114,29 @@ async def es_create_genre_index(client):
                         "analyzer": "ru_en"
                     },
                     'description': {
+                        'type': 'text',
+                        "analyzer": "ru_en"
+                    }
+                },
+            },
+        },
+        ignore=400,
+    )
+
+
+async def es_create_person_index(client):
+    """Create persons index in Elasticsearch if one isn't already there."""
+    await client.indices.create(
+        index=PERSON_INDEX_NAME,
+        body={
+            'settings': SETTINGS,
+            'mappings': {
+                'dynamic': 'strict',
+                'properties': {
+                    'id': {
+                        'type': 'keyword',
+                    },
+                    'full_name': {
                         'type': 'text',
                         "analyzer": "ru_en"
                     }

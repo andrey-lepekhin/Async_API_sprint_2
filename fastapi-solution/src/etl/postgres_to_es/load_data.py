@@ -11,7 +11,8 @@ from elasticsearch.helpers import streaming_bulk
 from ps_to_es import (
     es_create_genre_index,
     es_create_show_index,
-    generate_actions
+    generate_actions,
+    es_create_person_index
 )
 from psycopg2.extras import RealDictCursor
 from settings import SHOW_INDEX_NAME, dsl
@@ -80,6 +81,7 @@ def main(pg_connection: psycopg2.extensions.connection, es_client: Elasticsearch
         logger.info('Создание индекса')
         es_create_show_index(es_client)
         es_create_genre_index(es_client)
+        es_create_person_index(es_client)
 
         logger.info('Перенос индекса')
         i = 0
