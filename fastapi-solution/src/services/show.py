@@ -27,7 +27,6 @@ class ShowService:
             return None
         return Show(**doc['_source'])
 
-
     async def get_many_with_filter_sort_pagination(
             self,
             filter_genre: ShowGenreFilter = Depends(),

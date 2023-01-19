@@ -10,6 +10,7 @@ def orjson_dumps(v, *, default):
     # orjson.dumps возвращает bytes, а pydantic требует unicode, поэтому декодируем
     return orjson.dumps(v, default=default).decode()
 
+
 class Show(BaseModel):
     id: Union[UUID4, str]  # TODO: Redis.set fails if this is just UUID4, fix it?
     imdb_rating: Optional[float] = None
@@ -26,6 +27,7 @@ class Show(BaseModel):
         # Заменяем стандартную работу с json на более быструю
         json_loads = orjson.loads
         json_dumps = orjson_dumps
+
 
 class ShowGenreFilter(BaseModel):
     class Config:

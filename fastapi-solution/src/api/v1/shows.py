@@ -12,11 +12,12 @@ from services.show import ShowService, get_show_service
 router = APIRouter()
 router.route_class = BracketRoute
 
+
 class SingleShowAPIResponse(Show):
     pass  # Assuming no internal information in Show model, so we don't need to cut anything out
 
-# TODO: документировать параметры
 
+# TODO: документировать параметры
 @router.get('', response_model=Optional[List[Show]])
 @cache(expire=SHOW_CACHE_EXPIRE_IN_SECONDS)
 async def show_list(
@@ -31,8 +32,6 @@ async def show_list(
         pagination=pagination_filter,
     )
     return items
-
-
 
 
 @router.get('/{show_id}', response_model=SingleShowAPIResponse)
