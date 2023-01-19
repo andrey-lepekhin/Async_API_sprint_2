@@ -67,7 +67,7 @@ async def es_create_show_index(client):
                             'id': {
                                 'type': 'keyword',
                             },
-                            'name': {
+                            'full_name': {
                                 'type': 'text',
                                 'analyzer': 'ru_en',
                             },
@@ -80,7 +80,7 @@ async def es_create_show_index(client):
                             'id': {
                                 'type': 'keyword',
                             },
-                            'name': {
+                            'full_name': {
                                 'type': 'text',
                                 'analyzer': 'ru_en',
                             },
@@ -159,9 +159,9 @@ def validate_row_create_es_doc(row):
 
     if row['persons'][0] is not None:
         persons = [_dict_from_persons_str(p) for p in row['persons']]
-        directors = [Person(id=p['id'], name=p['name']) for p in persons if p['role'] == 'director']
-        actors = [Person(id=p['id'], name=p['name']) for p in persons if p['role'] == 'actor']
-        writers = [Person(id=p['id'], name=p['name']) for p in persons if p['role'] == 'writer']
+        directors = [Person(id=p['id'], name=p['full_name']) for p in persons if p['role'] == 'director']
+        actors = [Person(id=p['id'], name=p['full_name']) for p in persons if p['role'] == 'actor']
+        writers = [Person(id=p['id'], name=p['full_name']) for p in persons if p['role'] == 'writer']
     else:
         directors = actors = writers = []
 
@@ -177,9 +177,9 @@ def validate_row_create_es_doc(row):
         genres=genres,
         title=row['title'],
         description=row['description'],
-        director=[p.name for p in directors],
-        actors_names=[p.name for p in actors],
-        writers_names=[p.name for p in writers],
+        director=[p.full_name for p in directors],
+        actors_names=[p.full_name for p in actors],
+        writers_names=[p.full_name for p in writers],
         actors=actors,
         writers=writers,
     ).dict(by_alias=True)
