@@ -14,8 +14,8 @@ def orjson_dumps(v, *, default):
 
 class Genre(BaseModel):
     id: Union[UUID4, str]  # TODO: Redis.set fails if this is just UUID4, fix it?
-    name: str
-    description: str
+    name: Optional[str] = None
+    description: Optional[str] = None
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
 
@@ -28,4 +28,4 @@ class Genre(BaseModel):
 class GenreSortFilter(BaseSortFilter):
 
     class Config:
-        allowed_filter_field_names = ['name']
+        allowed_filter_field_names = ['name', ]

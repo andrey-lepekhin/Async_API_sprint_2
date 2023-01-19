@@ -106,11 +106,11 @@ async def es_create_genre_index(client):
                         'type': 'keyword',
                     },
                     'name': {
-                        'type': 'str',
+                        'type': 'text',
                         "analyzer": "ru_en"
                     },
                     'description': {
-                        'type': 'str',
+                        'type': 'text',
                         "analyzer": "ru_en"
                     }
                 },
@@ -122,7 +122,7 @@ async def es_create_genre_index(client):
 
 class Person(BaseModel):
     id: str
-    name: str
+    full_name: str
 
 
 class Genre(BaseModel):
@@ -151,12 +151,11 @@ def validate_row_create_es_doc(row):
         return {
             'id': (string.split(':::'))[0],
             'role': (string.split(':::'))[1],
-            'name': (string.split(':::'))[2],
+            'full_name': (string.split(':::'))[2],
         }
 
     def _genre_from_genres_str(string):
         return Genre(id=string.split(':::')[0], name=string.split(':::')[1])
-
 
     if row['persons'][0] is not None:
         persons = [_dict_from_persons_str(p) for p in row['persons']]

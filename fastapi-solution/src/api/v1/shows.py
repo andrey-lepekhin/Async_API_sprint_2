@@ -2,8 +2,8 @@ from http import HTTPStatus
 from typing import List, Optional
 
 from api.v1.square_brackets_params import BracketRoute
-from core.config import SHOW_CACHE_EXPIRE_IN_SECONDS
-from fastapi import APIRouter, Depends, HTTPException, Query, Request
+from core.config import CACHE_EXPIRE_IN_SECONDS
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi_cache.decorator import cache
 from models.filters import PaginationFilter
 from models.show import Show, ShowGenreFilter, ShowSortFilter
@@ -19,7 +19,7 @@ class SingleShowAPIResponse(Show):
 
 # TODO: документировать параметры
 @router.get('', response_model=Optional[List[Show]])
-@cache(expire=SHOW_CACHE_EXPIRE_IN_SECONDS)
+@cache(expire=CACHE_EXPIRE_IN_SECONDS)
 async def show_list(
         show_sort_filter: ShowSortFilter = Depends(),
         show_genre_filter: ShowGenreFilter = Depends(),
@@ -35,7 +35,7 @@ async def show_list(
 
 
 @router.get('/{show_id}', response_model=SingleShowAPIResponse)
-@cache(expire=SHOW_CACHE_EXPIRE_IN_SECONDS)
+@cache(expire=CACHE_EXPIRE_IN_SECONDS)
 async def show_details(
         show_id: str,
         show_service: ShowService = Depends(get_show_service),
