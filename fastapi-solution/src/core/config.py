@@ -26,7 +26,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 API_V1_BASE_ROUTE = '/api/v1'
 
 SHOW_CACHE_EXPIRE_IN_SECONDS = int(os.getenv('SHOW_CACHE_EXPIRE_IN_SECONDS', 5*60))
-SHOW_INDEX_NAME = 'movies' # TODO: change to shows?
+SHOW_INDEX_NAME = 'shows'
 
 SHOW_INDEX_NAME = 'shows'
 GENRE_INDEX_NAME = 'genres'

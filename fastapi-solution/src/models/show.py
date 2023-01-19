@@ -1,9 +1,8 @@
 from typing import List, Optional, Union
 
 import orjson
-from api.utils import BaseSortFilter
-from fastapi import Query
 from models.common_models import Genre, Person
+from models.filters import BaseSortFilter
 from pydantic import UUID4, BaseModel, Field
 
 
@@ -14,7 +13,7 @@ def orjson_dumps(v, *, default):
 class Show(BaseModel):
     id: Union[UUID4, str]  # TODO: Redis.set fails if this is just UUID4, fix it?
     imdb_rating: Optional[float] = None
-    genre: Optional[List[str]] = None
+    genres: Optional[List[Genre]] = None
     title: Optional[str] = None
     description: Optional[str] = None
     director: Optional[List[str]] = None
@@ -28,12 +27,12 @@ class Show(BaseModel):
         json_loads = orjson.loads
         json_dumps = orjson_dumps
 
-class ShowGenreFilter:
-    def __init__(
-            self,
-            genre_id: UUID4 = Query(None, alias="filter[genre]"),
-    ):
-        self.genre_id = genre_id
+class ShowGenreFilter(BaseModel):
+    class Config:
+        allow_population_by_field_name = True
+
+    genre_id: UUID4 = Field(None, alias="filter__genre__")
+
 
 class ShowSortFilter(BaseSortFilter):
 

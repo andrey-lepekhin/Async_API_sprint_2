@@ -1,8 +1,8 @@
 from http import HTTPStatus
-from typing import List, Optional
+from typing import Optional
 
-from fastapi import HTTPException
-from pydantic import BaseModel, validator
+from fastapi import HTTPException, Query
+from pydantic import BaseModel, Field, validator
 
 
 class BaseSortFilter(BaseModel):
@@ -36,3 +36,10 @@ class BaseSortFilter(BaseModel):
             raise HTTPException(HTTPStatus.BAD_REQUEST, f"You tried to sort by '{field_name}', but you may only sort by: {', '.join(allowed_field_names)}")
 
         return value
+
+class PaginationFilter(BaseModel):
+    class Config:
+        allow_population_by_field_name = True
+
+    page_size: int = Field(10, alias="page__size__", ge=1, le=1000)
+    page_number: int = Field(1, alias="page__number__", ge=1)
