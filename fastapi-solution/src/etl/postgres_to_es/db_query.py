@@ -56,7 +56,7 @@ select fw.id                                           AS                id,
        fw.title                                        AS                title,
        fw.description                                  AS                description,
        fw.rating                                       AS                imdb_rating,
-       ARRAY_AGG(DISTINCT g.name ORDER BY g.name DESC) AS                genre,
+       ARRAY_AGG(DISTINCT g.id || ':::' || g.name)     AS                genres,
        ARRAY_AGG(DISTINCT p.id || ':::' || pfw.role || ':::' || p.full_name) persons
 from content.film_work fw
          left join content.person_film_work pfw on fw.id = pfw.film_work_id

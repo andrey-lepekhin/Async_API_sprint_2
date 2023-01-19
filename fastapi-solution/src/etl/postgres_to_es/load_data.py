@@ -4,14 +4,14 @@ import os
 import time
 
 import psycopg2
-from elasticsearch import Elasticsearch
-from elasticsearch.helpers import streaming_bulk
-from psycopg2.extras import RealDictCursor
-
 from backoff import my_backoff
 from db_query import load_film_id
-from settings import dsl
-from ps_to_es import generate_actions, es_create_show_index, es_create_genre_index
+from elasticsearch import Elasticsearch
+from elasticsearch.helpers import streaming_bulk
+from ps_to_es import (es_create_genre_index, es_create_show_index,
+                      generate_actions)
+from psycopg2.extras import RealDictCursor
+from settings import SHOW_INDEX_NAME, dsl
 from sqlite_functions import get_lsl_from_sqlite, save_to_sqlite
 
 logger = logging.getLogger(__name__)
@@ -82,7 +82,7 @@ def main(pg_connection: psycopg2.extensions.connection, es_client: Elasticsearch
         i = 0
         streaming_blk = streaming_bulk(
             client=es_client,
-            index='movies',
+            index=SHOW_INDEX_NAME,
             actions=generate_actions(pg_cursor, last_successful_load),
             max_retries=100,
             initial_backoff=0.1,
