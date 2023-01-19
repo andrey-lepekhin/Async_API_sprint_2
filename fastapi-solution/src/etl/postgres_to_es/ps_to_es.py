@@ -172,21 +172,10 @@ class EsDataclass(BaseModel):
     writers: Optional[List[Person]] = None
 
 
-class EsDataclassGenre(BaseModel):
-    id: str
-    title: Optional[str] = None
-    description: Optional[str] = None
-
-
-class EsDataclassPerson(BaseModel):
-    id: str
-    full_name: Optional[str] = None
-
-
 def validate_row_create_es_doc(row):
     """Метод преобразования данных из PG в ES построчно"""
 
-    def _dict_from_persons_str(string):
+    def dict_from_persons_str(string):
         return {
             'id': (string.split(':::'))[0],
             'role': (string.split(':::'))[1],
@@ -197,7 +186,7 @@ def validate_row_create_es_doc(row):
         return Genre(id=string.split(':::')[0], name=string.split(':::')[1])
 
     if row['persons'][0] is not None:
-        persons = [_dict_from_persons_str(p) for p in row['persons']]
+        persons = [dict_from_persons_str(p) for p in row['persons']]
         directors = [Person(id=p['id'], full_name=p['full_name']) for p in persons if p['role'] == 'director']
         actors = [Person(id=p['id'], full_name=p['full_name']) for p in persons if p['role'] == 'actor']
         writers = [Person(id=p['id'], full_name=p['full_name']) for p in persons if p['role'] == 'writer']
@@ -227,20 +216,16 @@ def validate_row_create_es_doc(row):
 def validate_row_create_es_doc_genre(row):
     """Метод преобразования жанров из PG в ES построчно"""
     for g in row['genres']:
-        yield {
-            'id': (g.split(':::'))[0],
-            'name': (g.split(':::'))[1],
-            'description': (g.split(':::'))[2],
+        return {
+            'id': (g.split(':::'))[0]
         }
 
 
 def validate_row_create_es_doc_person(row):
     """Метод преобразования данных из PG в ES построчно"""
-
     for p in row['persons']:
-        yield {
-            'id': (p.split(':::'))[0],
-            'full_name': (p.split(':::'))[1]
+        return {
+            'id': (p.split(':::'))[0]
         }
 
 

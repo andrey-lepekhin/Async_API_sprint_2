@@ -92,7 +92,7 @@ def main(pg_connection: psycopg2.extensions.connection, es_client: Elasticsearch
         es_create_genre_index(es_client)
         streaming_blk_genres = streaming_bulk(
             client=es_client,
-            index=GENRE_INDEX_NAME,
+            index=SHOW_INDEX_NAME,
             actions=generate_genre_actions(pg_cursor, last_successful_load),
             max_retries=100,
             initial_backoff=0.1,
@@ -101,7 +101,7 @@ def main(pg_connection: psycopg2.extensions.connection, es_client: Elasticsearch
         es_create_person_index(es_client)
         streaming_blk_persons = streaming_bulk(
             client=es_client,
-            index=PERSON_INDEX_NAME,
+            index=SHOW_INDEX_NAME,
             actions=generate_person_actions(pg_cursor, last_successful_load),
             max_retries=100,
             initial_backoff=0.1,
@@ -111,7 +111,17 @@ def main(pg_connection: psycopg2.extensions.connection, es_client: Elasticsearch
         i = 0
         for ok, response in streaming_blk_shows:
             if not ok:
-                logger.error('Ошибка при передаче данных')
+                logger.error('Ошибка при передаче данных shows')
+            logger.debug(response)
+            i += 1
+        for ok, response in streaming_blk_genres:
+            if not ok:
+                logger.error('Ошибка при передаче данных genres')
+            logger.debug(response)
+            i += 1
+        for ok, response in streaming_blk_persons:
+            if not ok:
+                logger.error('Ошибка при передаче данных persons')
             logger.debug(response)
             i += 1
         etl_successful = True
