@@ -41,5 +41,5 @@ class GenreService:
 
 
 @lru_cache()
-def get_genre_service(elastic: AsyncElasticsearch = Depends(get_elastic)) -> ShowService:
+def get_genre_service(elastic: AsyncElasticsearch = Depends(get_elastic)) -> GenreService:
     return GenreService(elastic)
