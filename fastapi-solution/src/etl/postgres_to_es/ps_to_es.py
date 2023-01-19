@@ -2,10 +2,9 @@ from __future__ import annotations
 
 from typing import List, Optional
 
-from pydantic import BaseModel, Field
-
-from settings import SHOW_INDEX_NAME, SETTINGS, GENRE_INDEX_NAME
 from db_query import full_load
+from pydantic import BaseModel, Field
+from settings import GENRE_INDEX_NAME, SETTINGS, SHOW_INDEX_NAME
 
 
 async def es_create_show_index(client):
@@ -23,8 +22,18 @@ async def es_create_show_index(client):
                     'imdb_rating': {
                         'type': 'float',
                     },
-                    'genre': {
-                        'type': 'keyword',
+                    'genres': {
+                        'type': 'nested',
+                        'dynamic': 'strict',
+                        'properties': {
+                            'id': {
+                                'type': 'keyword',
+                            },
+                            'name': {
+                                'type': 'text',
+                                'analyzer': 'ru_en',
+                            },
+                        },
                     },
                     'title': {
                         'type': 'text',
@@ -116,11 +125,16 @@ class Person(BaseModel):
     name: str
 
 
+class Genre(BaseModel):
+    id: str
+    name: str
+
+
 class EsDataclass(BaseModel):
     id: str
     underscore_id: str = Field(alias='_id') # публичное имя
     imdb_rating: Optional[float] = None
-    genre: Optional[List[str]] = None
+    genres: Optional[List[Genre]] = None
     title: Optional[str] = None
     description: Optional[str] = None
     director: Optional[List[str]] = None
@@ -133,26 +147,35 @@ class EsDataclass(BaseModel):
 def validate_row_create_es_doc(row):
     """Метод преобразования данных из PG в ES построчно"""
 
-    def _dict_from_str(string):
+    def _dict_from_persons_str(string):
         return {
             'id': (string.split(':::'))[0],
             'role': (string.split(':::'))[1],
             'name': (string.split(':::'))[2],
         }
 
+    def _genre_from_genres_str(string):
+        return Genre(id=string.split(':::')[0], name=string.split(':::')[1])
+
+
     if row['persons'][0] is not None:
-        persons = [_dict_from_str(p) for p in row['persons']]
+        persons = [_dict_from_persons_str(p) for p in row['persons']]
         directors = [Person(id=p['id'], name=p['name']) for p in persons if p['role'] == 'director']
         actors = [Person(id=p['id'], name=p['name']) for p in persons if p['role'] == 'actor']
         writers = [Person(id=p['id'], name=p['name']) for p in persons if p['role'] == 'writer']
     else:
         directors = actors = writers = []
 
+    if row['genres'][0] is not None:
+        genres = [_genre_from_genres_str(g) for g in row['genres']]
+    else:
+        genres = []
+
     return EsDataclass(
         id=row['id'],
         _id=row['id'],
         imdb_rating=row['imdb_rating'],
-        genre=row['genre'],
+        genres=genres,
         title=row['title'],
         description=row['description'],
         director=[p.name for p in directors],
