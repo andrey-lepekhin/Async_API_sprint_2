@@ -16,8 +16,6 @@ class Genre(BaseModel):
     id: Union[UUID4, str]  # TODO: Redis.set fails if this is just UUID4, fix it?
     name: Optional[str] = None
     description: Optional[str] = None
-    created_at: Optional[datetime] = None
-    updated_at: Optional[datetime] = None
 
     class Config:
         # Заменяем стандартную работу с json на более быструю

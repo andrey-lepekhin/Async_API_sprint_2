@@ -42,16 +42,6 @@ services:
     depends_on:
       - elasticsearch
 
-  kibana:
-    container_name: kb-container
-    image: docker.elastic.co/kibana/kibana:7.7.0
-    environment:
-      - ELASTICSEARCH_HOSTS=http://movies-elasticsearch:9200
-    depends_on:
-      - elasticsearch
-    ports:
-      - "5601:5601"
-
   redis:
     container_name: redis
     image: redis:6.2.6

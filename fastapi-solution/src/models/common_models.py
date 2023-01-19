@@ -5,13 +5,11 @@ from pydantic import UUID4, Field
 
 
 class Genre(BaseModel):
-    id: UUID4
-    name: str
+    id: UUID4 = Field(alias="uuid")
 
 
 class Person(BaseModel):
     id: UUID4 = Field(alias="uuid")
-    name: str = Field(alias="full_name")
 
 
 class PersonShow(Person):

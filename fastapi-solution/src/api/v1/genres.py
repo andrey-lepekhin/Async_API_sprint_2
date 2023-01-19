@@ -20,7 +20,7 @@ class SingleGenreAPIResponse(Genre):
 
 
 # Pydantic supports the creation of generic models to make it easier to reuse a common model structure
-@router.get('/', response_model=List[Genre])
+@router.get('', response_model=Optional[List[Genre]])
 @cache(expire=CACHE_EXPIRE_IN_SECONDS)
 async def genre_list(
         genre_sort_filter: GenreSortFilter = Depends(),

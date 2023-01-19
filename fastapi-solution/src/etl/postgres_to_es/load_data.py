@@ -8,8 +8,11 @@ from backoff import my_backoff
 from db_query import load_film_id
 from elasticsearch import Elasticsearch
 from elasticsearch.helpers import streaming_bulk
-from ps_to_es import (es_create_genre_index, es_create_show_index,
-                      generate_actions)
+from ps_to_es import (
+    es_create_genre_index,
+    es_create_show_index,
+    generate_actions
+)
 from psycopg2.extras import RealDictCursor
 from settings import SHOW_INDEX_NAME, dsl
 from sqlite_functions import get_lsl_from_sqlite, save_to_sqlite

@@ -33,6 +33,10 @@ async def es_create_show_index(client):
                                 'type': 'text',
                                 'analyzer': 'ru_en',
                             },
+                            'description': {
+                                'type': 'text',
+                                'analyzer': 'ru_en',
+                            },
                         },
                     },
                     'title': {
@@ -159,9 +163,9 @@ def validate_row_create_es_doc(row):
 
     if row['persons'][0] is not None:
         persons = [_dict_from_persons_str(p) for p in row['persons']]
-        directors = [Person(id=p['id'], name=p['full_name']) for p in persons if p['role'] == 'director']
-        actors = [Person(id=p['id'], name=p['full_name']) for p in persons if p['role'] == 'actor']
-        writers = [Person(id=p['id'], name=p['full_name']) for p in persons if p['role'] == 'writer']
+        directors = [Person(id=p['id'], full_name=p['full_name']) for p in persons if p['role'] == 'director']
+        actors = [Person(id=p['id'], full_name=p['full_name']) for p in persons if p['role'] == 'actor']
+        writers = [Person(id=p['id'], full_name=p['full_name']) for p in persons if p['role'] == 'writer']
     else:
         directors = actors = writers = []
 
