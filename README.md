@@ -1,11 +1,37 @@
-# Проектная работа 4 спринта
+<h1 align="center">Hi there, We are 13`th Team!
+<img src="https://github.com/blackcater/blackcater/raw/main/images/Hi.gif" height="32"/></h1>
 
-**Важное сообщение для тимлида:** для ускорения проверки проекта укажите ссылку на приватный репозиторий с командной работой в файле readme и отправьте свежее приглашение на аккаунт [BlueDeep](https://github.com/BigDeepBlue).
+# WEB-sevice Online Cinema
 
-В папке **tasks** ваша команда найдёт задачи, которые необходимо выполнить в первом спринте второго модуля.  Обратите внимание на задачи **00_create_repo** и **01_create_basis**. Они расцениваются как блокирующие для командной работы, поэтому их необходимо выполнить как можно раньше.
+## How to run
+1. Install Makefile plugin
+2. Use this command to build containers
+```
+make first_run
+```
+Wait for building.
+Elasticsearch is available at the [link](http://localhost:9200/)
 
-Мы оценили задачи в стори поинтах, значения которых брались из [последовательности Фибоначчи](https://ru.wikipedia.org/wiki/Числа_Фибоначчи) (1,2,3,5,8,…).
+3. Use this commands to open bash in a container
+```
+make run         - rebuild containers
+make postgresql         - postgresql container controls
+make elasticsearch      - elasticsearch container controls
+make etl                - etl container controls
+make redis              - redis container controls
+make shows_async        - async-container controls
+```
+4. Use this command to stop containers
+```
+make stop
+```
 
-Вы можете разбить имеющиеся задачи на более маленькие, например, распределять между участниками команды не большие куски задания, а маленькие подзадачи. В таком случае не забудьте зафиксировать изменения в issues в репозитории.
+### How to run tests
 
-**От каждого разработчика ожидается выполнение минимум 40% от общего числа стори поинтов в спринте.**
+1. Download the [Postman](https://www.postman.com/)
+2. Make a postman tests file and import it to Postman
+3. Run postman tests after running the app
+
+### 
+
+Have a nice day
