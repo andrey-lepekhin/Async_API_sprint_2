@@ -1,7 +1,6 @@
 from http import HTTPStatus
 from typing import List, Optional
 
-from api.v1.square_brackets_params import BracketRoute
 from core.config import SHOW_CACHE_EXPIRE_IN_SECONDS
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from fastapi_cache.decorator import cache
@@ -10,7 +9,7 @@ from models.show import Show, ShowGenreFilter, ShowSortFilter
 from services.show import ShowService, get_show_service
 
 router = APIRouter()
-router.route_class = BracketRoute
+# router.route_class = BracketRoute
 
 class SingleShowAPIResponse(Show):
     pass  # Assuming no internal information in Show model, so we don't need to cut anything out
@@ -31,8 +30,6 @@ async def show_list(
         pagination=pagination_filter,
     )
     return items
-
-
 
 
 @router.get('/{show_id}', response_model=SingleShowAPIResponse)
