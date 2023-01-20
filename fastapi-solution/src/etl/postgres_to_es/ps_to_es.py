@@ -175,12 +175,14 @@ class EsDataclass(BaseModel):
 
 class EsDataclassGenre(BaseModel):
     id: str
+    underscore_id: str = Field(alias='_id')
     name: Optional[str] = None
     description: Optional[str] = None
 
 
 class EsDataclassPerson(BaseModel):
     id: str
+    underscore_id: str = Field(alias='_id')
     full_name: Optional[str] = None
 
 
@@ -229,6 +231,7 @@ def validate_row_create_es_doc_genre(row):
     """Метод преобразования жанров из PG в ES построчно"""
     return EsDataclassGenre(
         id=row['id'],
+        _id=row['id'],
         name=row['name'],
         description=row['description']
     ).dict(by_alias=True)
@@ -238,6 +241,7 @@ def validate_row_create_es_doc_person(row):
     """Метод преобразования данных из PG в ES построчно"""
     return EsDataclassPerson(
         id=row['id'],
+        _id=row['id'],
         full_name=row['full_name']
     ).dict(by_alias=True)
 
