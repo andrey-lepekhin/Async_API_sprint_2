@@ -89,19 +89,21 @@ def main(pg_connection: psycopg2.extensions.connection, es_client: Elasticsearch
             initial_backoff=0.1,
             max_backoff=10,
         )
+
         es_create_genre_index(es_client)
         streaming_blk_genres = streaming_bulk(
             client=es_client,
-            index=SHOW_INDEX_NAME,
+            index=GENRE_INDEX_NAME,
             actions=generate_genre_actions(pg_cursor, last_successful_load),
             max_retries=100,
             initial_backoff=0.1,
             max_backoff=10,
         )
+
         es_create_person_index(es_client)
         streaming_blk_persons = streaming_bulk(
             client=es_client,
-            index=SHOW_INDEX_NAME,
+            index=PERSON_INDEX_NAME,
             actions=generate_person_actions(pg_cursor, last_successful_load),
             max_retries=100,
             initial_backoff=0.1,

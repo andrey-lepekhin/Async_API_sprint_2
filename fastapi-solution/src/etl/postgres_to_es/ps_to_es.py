@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from typing import List, Optional
 
 from db_query import full_load
@@ -215,18 +216,19 @@ def validate_row_create_es_doc(row):
 
 def validate_row_create_es_doc_genre(row):
     """Метод преобразования жанров из PG в ES построчно"""
-    for g in row['genres']:
-        return {
-            'id': (g.split(':::'))[0]
-        }
+    return {
+        'id': row['id'],
+        'name': row['name'],
+        'description': row['description']
+    }
 
 
 def validate_row_create_es_doc_person(row):
     """Метод преобразования данных из PG в ES построчно"""
-    for p in row['persons']:
-        return {
-            'id': (p.split(':::'))[0]
-        }
+    return {
+        'id': row['id'],
+        'full_name': row['full_name']
+      }
 
 
 def generate_actions(pg_cursor, last_successful_load):
