@@ -28,6 +28,13 @@ async def genre_list(
         pagination_filter: PaginationFilter = Depends(),
         genre_service: GenreService = Depends(get_genre_service),
 ) -> Optional[List[Genre]]:
+    """
+    Gets a list of genres.
+    :param pagination_filter: pagination filter
+    :param genre_sort_filter: genre filter
+    :param genre_service: genre service
+    :return: Optional[List[Genre]]
+    """
     items = await genre_service.get_many_with_filter_sort_pagination(
         sort=genre_sort_filter,
         pagination=pagination_filter,
@@ -43,9 +50,9 @@ async def genre_details(
 ) -> SingleGenreAPIResponse:
     """
     Gets a single genre by its ID.
-    :param genre_id:
-    :param genre_service:
-    :return:
+    :param genre_id: id
+    :param genre_service: service
+    :return: SingleGenreAPIResponse
     """
     genre = await genre_service.get_by_id(genre_id)
     if not genre:

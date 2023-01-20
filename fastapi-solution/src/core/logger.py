@@ -55,4 +55,4 @@ LOGGING = {
         'formatter': 'verbose',
         'handlers': LOG_DEFAULT_HANDLERS,
     },
-} 
+}

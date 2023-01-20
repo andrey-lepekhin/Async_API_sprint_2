@@ -1,5 +1,5 @@
 from functools import lru_cache
-from typing import List, Optional, Union
+from typing import List, Optional
 
 from core.config import GENRE_INDEX_NAME
 from db.elastic import get_elastic
@@ -18,8 +18,8 @@ class GenreService:
     async def get_by_id(self, genre_id: str) -> Optional[Genre]:
         """
         Gets a single genre by its ID from ES.
-        :param genre_id:
-        :return:
+        :param genre_id: id
+        :return: Optional[Genre]
         """
         try:
             doc = await self.elastic.get(index=GENRE_INDEX_NAME, id=genre_id)

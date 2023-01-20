@@ -2,7 +2,7 @@ from http import HTTPStatus
 from typing import Optional
 
 from fastapi import HTTPException, Query
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, validator
 
 
 class BaseSortFilter(BaseModel):
@@ -33,7 +33,10 @@ class BaseSortFilter(BaseModel):
 
         field_name = value.replace("+", "").replace("-", "")
         if field_name not in allowed_field_names:
-            raise HTTPException(HTTPStatus.BAD_REQUEST, f"You tried to sort by '{field_name}', but you may only sort by: {', '.join(allowed_field_names)}")
+            raise HTTPException(
+                HTTPStatus.BAD_REQUEST, f"You tried to sort by '{field_name}', "
+                                        f"but you may only sort by: {', '.join(allowed_field_names)}"
+            )
 
         return value
 
@@ -50,7 +53,8 @@ class PaginationFilter:
         if page_size * page_number > self.MAX_RESULTS:
             raise HTTPException(
                 HTTPStatus.BAD_REQUEST,
-                f'Currently allowing pagination only up to {self.MAX_RESULTS} results. You\'re asking for {page_size * page_number}',
+                f'Currently allowing pagination only up to {self.MAX_RESULTS} '
+                f'results. You\'re asking for {page_size * page_number}',
             )
         self.page_size = page_size
         self.page_number = page_number

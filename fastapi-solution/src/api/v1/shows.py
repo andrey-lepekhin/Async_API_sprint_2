@@ -24,6 +24,13 @@ async def show_list(
         pagination_filter: PaginationFilter = Depends(),
         show_service: ShowService = Depends(get_show_service),
 ) -> Optional[List[Show]]:
+    """
+    Gets a list of genres.
+    :param show_service: service
+    :param show_genre_filter: show filter
+    :param show_sort_filter: show filter
+    :return: Optional[List[Show]]
+    """
     items = await show_service.get_many_with_filter_sort_pagination(
         filter_genre=show_genre_filter,
         sort=show_sort_filter,
@@ -40,9 +47,9 @@ async def show_details(
 ) -> SingleShowAPIResponse:
     """
     Gets a single show by its ID.
-    :param show_id:
-    :param show_service:
-    :return:
+    :param show_id: id
+    :param show_service: service
+    :return: SingleShowAPIResponse
     """
     show = await show_service.get_by_id(show_id)
     if not show:

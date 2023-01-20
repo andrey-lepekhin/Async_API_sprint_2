@@ -6,6 +6,7 @@ from elasticsearch_dsl import Search
 async def get_key_by_args(*args, **kwargs) -> str:
     return f'{args}:{json.dumps({"kwargs": kwargs}, sort_keys=True)}'
 
+
 def paginate_es_query(
         query: Search,
         page_size: int,

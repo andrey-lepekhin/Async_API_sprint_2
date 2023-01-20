@@ -18,8 +18,8 @@ class PersonService:
     async def get_by_id(self, person_id: str) -> Optional[Person]:
         """
         Gets a single person by its ID from ES.
-        :param person_id:
-        :return:
+        :param person_id: id
+        :return: Optional[Person]
         """
         try:
             doc = await self.elastic.get(index=PERSON_INDEX_NAME, id=person_id)

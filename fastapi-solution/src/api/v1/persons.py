@@ -27,6 +27,13 @@ async def person_list(
         pagination_filter: PaginationFilter = Depends(),
         person_service: PersonService = Depends(get_person_service),
 ) -> Optional[List[Person]]:
+    """
+    Gets a list of persons.
+    :param person_service: service
+    :param person_sort_filter: person filter
+    :param pagination_filter: pagination filter
+    :return: Optional[List[Person]]
+    """
     items = await person_service.get_many_with_filter_sort_pagination(
         sort=person_sort_filter,
         pagination=pagination_filter,
@@ -42,9 +49,9 @@ async def person_details(
 ) -> SinglePersonAPIResponse:
     """
     Gets a single person by its ID.
-    :param person_id:
-    :param person_service:
-    :return:
+    :param person_id: id
+    :param person_service: service
+    :return: SinglePersonAPIResponse
     """
     person = await person_service.get_by_id(person_id)
     if not person:

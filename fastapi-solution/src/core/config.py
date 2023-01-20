@@ -11,7 +11,7 @@ load_dotenv(find_dotenv(raise_error_if_not_found=False))
 logging_config.dictConfig(LOGGING)
 
 # Название проекта. Используется в Swagger-документации
-PROJECT_NAME = os.getenv('PROJECT_NAME', 'Practix')
+PROJECT_NAME = os.getenv('PROJECT_NAME', 'Movies')
 
 # Настройки Redis
 REDIS_HOST = os.getenv('REDIS_HOST')

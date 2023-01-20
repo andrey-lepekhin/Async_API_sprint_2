@@ -4,7 +4,7 @@ import orjson
 from fastapi import Query
 from models.common_models import Genre, Person
 from models.filters import BaseSortFilter
-from pydantic import UUID4, BaseModel, Field
+from pydantic import UUID4, BaseModel
 
 
 def orjson_dumps(v, *, default):
@@ -35,7 +35,8 @@ class ShowGenreFilter:
             self,
             genre_id: str = Query(
                 None,
-                description='Genre UUID4, which is used to output only Shows with corresponding genres',
+                description='Genre UUID4, which is used to output '
+                            'only Shows with corresponding genres',
                 alias='filter[genre]',
             ),
     ):

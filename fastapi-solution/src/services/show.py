@@ -18,8 +18,8 @@ class ShowService:
     async def get_by_id(self, show_id: str) -> Optional[Show]:
         """
         Gets a single show by its ID from ES.
-        :param show_id:
-        :return:
+        :param show_id: id
+        :return: Optional[Show]
         """
         try:
             doc = await self.elastic.get(index=SHOW_INDEX_NAME, id=show_id)
@@ -36,7 +36,9 @@ class ShowService:
         s = Search()
         query = s
         if filter_genre.genre_id:
-            query = s.filter('nested', path='genres', query=Q('term', genres__id=filter_genre.genre_id))
+            query = s.filter(
+                'nested', path='genres', query=Q('term', genres__id=filter_genre.genre_id)
+            )
         query_body = paginate_es_query(
             query=query, page_size=pagination.page_size, page_number=pagination.page_number
         ).to_dict()
