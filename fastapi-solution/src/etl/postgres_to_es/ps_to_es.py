@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 from typing import List, Optional
 
-from db_query import full_load
+from db_query import full_load, load_person_q, query_all_genre
 from pydantic import BaseModel, Field
 from settings import GENRE_INDEX_NAME, SETTINGS, SHOW_INDEX_NAME, PERSON_INDEX_NAME
 
@@ -173,6 +173,17 @@ class EsDataclass(BaseModel):
     writers: Optional[List[Person]] = None
 
 
+class EsDataclassGenre(BaseModel):
+    id: str
+    name: Optional[str] = None
+    description: Optional[str] = None
+
+
+class EsDataclassPerson(BaseModel):
+    id: str
+    full_name: Optional[str] = None
+
+
 def validate_row_create_es_doc(row):
     """Метод преобразования данных из PG в ES построчно"""
 
@@ -216,19 +227,19 @@ def validate_row_create_es_doc(row):
 
 def validate_row_create_es_doc_genre(row):
     """Метод преобразования жанров из PG в ES построчно"""
-    return {
-        'id': row['id'],
-        'name': row['name'],
-        'description': row['description']
-    }
+    return EsDataclassGenre(
+        id=row['id'],
+        name=row['name'],
+        description=row['description']
+    ).dict(by_alias=True)
 
 
 def validate_row_create_es_doc_person(row):
     """Метод преобразования данных из PG в ES построчно"""
-    return {
-        'id': row['id'],
-        'full_name': row['full_name']
-      }
+    return EsDataclassPerson(
+        id=row['id'],
+        full_name=row['full_name']
+    ).dict(by_alias=True)
 
 
 def generate_actions(pg_cursor, last_successful_load):
@@ -240,13 +251,13 @@ def generate_actions(pg_cursor, last_successful_load):
 
 def generate_genre_actions(pg_cursor, last_successful_load):
     """Метод сборки данных об обновленных жанрах"""
-    pg_cursor.execute(full_load.format(last_successful_load))
+    pg_cursor.execute(query_all_genre.format(last_successful_load))
     for row in pg_cursor:
         yield validate_row_create_es_doc_genre(row)
 
 
 def generate_person_actions(pg_cursor, last_successful_load):
     """Метод сборки данных об обновленных персонах"""
-    pg_cursor.execute(full_load.format(last_successful_load))
+    pg_cursor.execute(load_person_q.format(last_successful_load))
     for row in pg_cursor:
         yield validate_row_create_es_doc_person(row)

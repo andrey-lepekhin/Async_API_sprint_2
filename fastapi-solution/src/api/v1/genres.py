@@ -1,10 +1,10 @@
 from http import HTTPStatus
-from typing import List, Optional
+from typing import List, Optional, Union
 
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi_cache.decorator import cache
+from pydantic import UUID4, BaseModel
 
-from api.v1.square_brackets_params import BracketRoute
 from models.filters import PaginationFilter
 from services.genre import GenreService, get_genre_service
 from models.genre import Genre, GenreSortFilter
@@ -12,11 +12,12 @@ from models.genre import Genre, GenreSortFilter
 from core.config import CACHE_EXPIRE_IN_SECONDS
 
 router = APIRouter()
-router.route_class = BracketRoute
 
 
-class SingleGenreAPIResponse(Genre):
-    pass  # Assuming no internal information in Genre model, so we don't need to cut anything out
+class SingleGenreAPIResponse(BaseModel):
+    id: Union[UUID4, str]
+    name: Optional[str] = None
+    description: Optional[str] = None
 
 
 # Pydantic supports the creation of generic models to make it easier to reuse a common model structure

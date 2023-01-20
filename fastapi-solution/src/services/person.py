@@ -4,7 +4,7 @@ from typing import List, Optional
 from core.config import PERSON_INDEX_NAME
 from db.elastic import get_elastic
 from elasticsearch import AsyncElasticsearch, NotFoundError
-from elasticsearch_dsl import Q, Search
+from elasticsearch_dsl import Search
 from fastapi import Depends
 from models.filters import PaginationFilter
 from models.person import Person, PersonSortFilter
@@ -34,8 +34,12 @@ class PersonService:
     ) -> Optional[List[Person]]:
         s = Search()
         query = s
-        query_body = paginate_es_query(query=query, page_size=pagination.page_size, page_number=pagination.page_number).to_dict()
-        search = await self.elastic.search(index=PERSON_INDEX_NAME, body=query_body, sort=sort._get_sort_for_elastic())
+        query_body = paginate_es_query(
+            query=query, page_size=pagination.page_size, page_number=pagination.page_number
+        ).to_dict()
+        search = await self.elastic.search(
+            index=PERSON_INDEX_NAME, body=query_body, sort=sort._get_sort_for_elastic()
+        )
         items = [Person(**hit['_source']) for hit in search['hits']['hits']]
         return items
 

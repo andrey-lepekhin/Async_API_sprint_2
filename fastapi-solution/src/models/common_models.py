@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List
 
 from models.base import BaseModel
 from pydantic import UUID4, Field

@@ -37,8 +37,12 @@ class ShowService:
         query = s
         if filter_genre.genre_id:
             query = s.filter('nested', path='genres', query=Q('term', genres__id=filter_genre.genre_id))
-        query_body = paginate_es_query(query=query, page_size=pagination.page_size, page_number=pagination.page_number).to_dict()
-        search = await self.elastic.search(index=SHOW_INDEX_NAME, body=query_body, sort=sort._get_sort_for_elastic())
+        query_body = paginate_es_query(
+            query=query, page_size=pagination.page_size, page_number=pagination.page_number
+        ).to_dict()
+        search = await self.elastic.search(
+            index=SHOW_INDEX_NAME, body=query_body, sort=sort._get_sort_for_elastic()
+        )
         items = [Show(**hit['_source']) for hit in search['hits']['hits']]
         return items
 

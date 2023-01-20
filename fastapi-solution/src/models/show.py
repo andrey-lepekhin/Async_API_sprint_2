@@ -30,7 +30,7 @@ class Show(BaseModel):
         json_dumps = orjson_dumps
 
 
-class ShowGenreFilter():
+class ShowGenreFilter:
     def __init__(
             self,
             genre_id: str = Query(

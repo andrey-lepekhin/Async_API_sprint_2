@@ -31,7 +31,7 @@ REPLACE INTO states (load_time, successful, created_at)
 VALUES ('{0}', {1}, '{2}');
 """
 
-load_person_q = "SELECT DISTINCT id FROM content.person GROUP BY id"
+load_person_q = "SELECT id, full_name FROM content.person GROUP BY id"
 
 load_person_role = """SELECT p.id, p.full_name, p.birth_date, 
                       ARRAY_AGG(DISTINCT pfw.role) AS role,       
@@ -71,4 +71,4 @@ having MAX(fw.modified) > '{0}'
 
 query_all_genre = """SELECT id, name, description
                  FROM content.genre
-                 ORDER BY created_at;"""
+                 ORDER BY created;"""

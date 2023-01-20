@@ -1,10 +1,10 @@
 from http import HTTPStatus
-from typing import List, Optional
+from typing import List, Optional, Union
 
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi_cache.decorator import cache
+from pydantic import BaseModel, UUID4
 
-from api.v1.square_brackets_params import BracketRoute
 from models.filters import PaginationFilter
 from services.person import PersonService, get_person_service
 from models.person import Person, PersonSortFilter
@@ -12,11 +12,11 @@ from models.person import Person, PersonSortFilter
 from core.config import CACHE_EXPIRE_IN_SECONDS
 
 router = APIRouter()
-router.route_class = BracketRoute
 
 
-class SinglePersonAPIResponse(Person):
-    pass  # Assuming no internal information in Person model, so we don't need to cut anything out
+class SinglePersonAPIResponse(BaseModel):
+    id: Union[UUID4, str]
+    full_name: Optional[str] = None
 
 
 # Pydantic supports the creation of generic models to make it easier to reuse a common model structure

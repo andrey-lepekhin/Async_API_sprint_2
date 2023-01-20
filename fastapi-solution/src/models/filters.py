@@ -37,8 +37,10 @@ class BaseSortFilter(BaseModel):
 
         return value
 
-class PaginationFilter():
+
+class PaginationFilter:
     MAX_RESULTS = 10000
+
     # TODO: переделать пагинацию чтобы работала на больших объемах данных, возможно с search_after эластика и прочие point in time https://www.elastic.co/guide/en/elasticsearch/reference/current/paginate-search-results.html
     def __init__(
             self,
