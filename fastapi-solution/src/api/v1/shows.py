@@ -9,7 +9,6 @@ from models.show import Show, ShowGenreFilter, ShowSortFilter
 from services.show import ShowService, get_show_service
 
 router = APIRouter()
-# router.route_class = BracketRoute
 
 class SingleShowAPIResponse(Show):
     pass  # Assuming no internal information in Show model, so we don't need to cut anything out
