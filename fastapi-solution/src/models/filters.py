@@ -37,10 +37,18 @@ class BaseSortFilter(BaseModel):
 
         return value
 
-
-class PaginationFilter(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
-    page_size: int = Field(10, alias="page__size__", ge=1, le=1000)
-    page_number: int = Field(1, alias="page__number__", ge=1)
+class PaginationFilter():
+    MAX_RESULTS = 10000
+    # TODO: переделать пагинацию чтобы работала на больших объемах данных, возможно с search_after эластика и прочие point in time https://www.elastic.co/guide/en/elasticsearch/reference/current/paginate-search-results.html
+    def __init__(
+            self,
+            page_size: int = Query(10, alias="page[size]", ge=1, le=1000),
+            page_number: int = Query(1, alias="page[number]", ge=1),
+    ):
+        if page_size * page_number > self.MAX_RESULTS:
+            raise HTTPException(
+                HTTPStatus.BAD_REQUEST,
+                f'Currently allowing pagination only up to {self.MAX_RESULTS} results. You\'re asking for {page_size * page_number}',
+            )
+        self.page_size = page_size
+        self.page_number = page_number

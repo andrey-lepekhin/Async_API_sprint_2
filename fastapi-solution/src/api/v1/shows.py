@@ -1,16 +1,14 @@
 from http import HTTPStatus
 from typing import List, Optional
 
-from api.v1.square_brackets_params import BracketRoute
 from core.config import CACHE_EXPIRE_IN_SECONDS
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from fastapi_cache.decorator import cache
 from models.filters import PaginationFilter
 from models.show import Show, ShowGenreFilter, ShowSortFilter
 from services.show import ShowService, get_show_service
 
 router = APIRouter()
-router.route_class = BracketRoute
 
 
 class SingleShowAPIResponse(Show):

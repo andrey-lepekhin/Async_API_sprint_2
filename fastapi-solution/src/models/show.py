@@ -1,6 +1,7 @@
 from typing import List, Optional, Union
 
 import orjson
+from fastapi import Query
 from models.common_models import Genre, Person
 from models.filters import BaseSortFilter
 from pydantic import UUID4, BaseModel, Field
@@ -29,11 +30,16 @@ class Show(BaseModel):
         json_dumps = orjson_dumps
 
 
-class ShowGenreFilter(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
-    genre_id: UUID4 = Field(None, alias="filter__genre__")
+class ShowGenreFilter():
+    def __init__(
+            self,
+            genre_id: str = Query(
+                None,
+                description='Genre UUID4, which is used to output only Shows with corresponding genres',
+                alias='filter[genre]',
+            ),
+    ):
+        self.genre_id = genre_id
 
 
 class ShowSortFilter(BaseSortFilter):
