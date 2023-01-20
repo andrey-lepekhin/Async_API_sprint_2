@@ -13,7 +13,7 @@ def orjson_dumps(v, *, default):
 
 
 class Genre(BaseModel):
-    id: Union[UUID4, str]  # TODO: Redis.set fails if this is just UUID4, fix it?
+    id: Union[UUID4, str]
     name: Optional[str] = None
     description: Optional[str] = None
 

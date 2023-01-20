@@ -1,5 +1,5 @@
 from functools import lru_cache
-from typing import List, Optional
+from typing import List, Optional, Union
 
 from core.config import GENRE_INDEX_NAME
 from db.elastic import get_elastic

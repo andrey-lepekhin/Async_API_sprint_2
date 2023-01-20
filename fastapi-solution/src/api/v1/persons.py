@@ -48,5 +48,5 @@ async def person_details(
     """
     person = await person_service.get_by_id(person_id)
     if not person:
-        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail='person not found')
+        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail=f'id:"{person_id}" is not found')
     return SinglePersonAPIResponse(**person.dict())
