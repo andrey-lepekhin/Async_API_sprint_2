@@ -26,7 +26,7 @@ logger.addHandler(logging.StreamHandler())
 @my_backoff()
 def etl_cycle():
     """Класс запуска ETL-цикла"""
-    es_client = Elasticsearch(hosts=os.environ.get('ELASTIC_HOST', 'http://elasticsearch:9200'))
+    es_client = Elasticsearch(hosts=os.environ.get('ES_HOST', 'http://elasticsearch:9200'))
     pg_connection = psycopg2.connect(**dsl, cursor_factory=RealDictCursor)
     try:
         while True:

@@ -1,7 +1,6 @@
 first_run:
 	#Команда для первого запуска
-	cp .env.example fastapi-solution/src/core/.env
-	cp fastapi-solution/src/etl/postgres_to_es/.env
+	cp .env.example .env
 	docker-compose up --build -d
 
 run:

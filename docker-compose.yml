@@ -9,7 +9,7 @@ services:
     container_name: postgres
     image: postgres:15
     env_file:
-      - ./fastapi-solution/src/core/.env
+      - .env
     volumes:
       - postgres_data:/var/lib/postgresql/data/
       - ./fastapi-solution/src/etl/postgres_to_es/movies_dmp.sql:/docker-entrypoint-initdb.d/movies_dmp.sql
@@ -37,7 +37,7 @@ services:
       context: .
       dockerfile: ./fastapi-solution/src/etl/postgres_to_es/Dockerfile
     env_file:
-      - ./fastapi-solution/src/etl/postgres_to_es/.env
+      - .env
     restart: unless-stopped
     depends_on:
       - elasticsearch
@@ -57,6 +57,6 @@ services:
       - elasticsearch
       - redis
     env_file:
-      - ./fastapi-solution/src/core/.env
+      - .env
     ports:
       - "8000:8000"
