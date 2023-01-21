@@ -5,7 +5,7 @@
 Sprint 4 in Practicum middle-python course.  
 Teamwork of
 * [Andrey Lepekhin](https://github.com/andrey-lepekhin)
-* [Polina](https://github.com/Polinavas95)
+* [Polina Vasileva](https://github.com/Polinavas95)
 
 ## How to run
 ```

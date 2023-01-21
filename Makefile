@@ -1,5 +1,3 @@
-PROJECT_NAME = Movies
-
 first_run:
 	#Команда для первого запуска
 	cp .env.example fastapi-solution/src/core/.env
