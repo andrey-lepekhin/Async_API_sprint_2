@@ -7,6 +7,10 @@ run:
 	#Команда для сборки и запуска контейнеров
 	docker-compose up --build -d
 
+generate_data:
+	#Generate fake data and push to ES
+	docker-compose exec etl python fastapi-solution/src/etl/postgres_to_es/generate_fake_data.py
+
 postgresql:
 	#Запуск консоли для управления postgresql-контейнером.
 	docker-compose exec postgres bash
