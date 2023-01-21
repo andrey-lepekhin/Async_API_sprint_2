@@ -4,15 +4,14 @@
 # WEB-sevice Online Cinema
 
 ## How to run
-1. Install Makefile plugin
-2. Use this command to build containers
+1. Use this command to build containers
 ```
 make first_run
 ```
 Wait for building.
 Elasticsearch is available at the [link](http://localhost:9200/)
 
-3. Use this commands to open bash in a container
+2. Use this commands to open bash in a container
 ```
 make run         - rebuild containers
 make postgresql         - postgresql container controls
@@ -21,16 +20,10 @@ make etl                - etl container controls
 make redis              - redis container controls
 make shows_async        - async-container controls
 ```
-4. Use this command to stop containers
+3. Use this command to stop containers
 ```
 make stop
 ```
-
-### How to run tests
-
-1. Download the [Postman](https://www.postman.com/)
-2. Make a postman tests file and import it to Postman
-3. Run postman tests after running the app
 
 ### 
 
