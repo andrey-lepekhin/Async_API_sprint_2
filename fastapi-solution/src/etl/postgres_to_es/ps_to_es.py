@@ -8,9 +8,9 @@ from pydantic import BaseModel, Field
 from settings import GENRE_INDEX_NAME, SETTINGS, SHOW_INDEX_NAME, PERSON_INDEX_NAME
 
 
-async def es_create_show_index(client):
+def es_create_show_index(client):
     """Create shows index in Elasticsearch if one isn't already there."""
-    await client.indices.create(
+    client.indices.create(
         index=SHOW_INDEX_NAME,
         body={
             'settings': SETTINGS,
@@ -98,9 +98,9 @@ async def es_create_show_index(client):
     )
 
 
-async def es_create_genre_index(client):
+def es_create_genre_index(client):
     """Create genres index in Elasticsearch if one isn't already there."""
-    await client.indices.create(
+    client.indices.create(
         index=GENRE_INDEX_NAME,
         body={
             'settings': SETTINGS,
@@ -125,9 +125,9 @@ async def es_create_genre_index(client):
     )
 
 
-async def es_create_person_index(client):
+def es_create_person_index(client):
     """Create persons index in Elasticsearch if one isn't already there."""
-    await client.indices.create(
+    client.indices.create(
         index=PERSON_INDEX_NAME,
         body={
             'settings': SETTINGS,
