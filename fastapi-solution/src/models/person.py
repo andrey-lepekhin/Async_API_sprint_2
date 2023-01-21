@@ -1,9 +1,8 @@
 from typing import Optional, Union
 
 import orjson
-from pydantic import UUID4, BaseModel
-
 from models.filters import BaseSortFilter
+from pydantic import UUID4, BaseModel
 
 
 def orjson_dumps(v, *, default):

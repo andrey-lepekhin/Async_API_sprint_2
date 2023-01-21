@@ -5,7 +5,8 @@ from typing import List, Optional
 
 from db_query import full_load, load_person_q, query_all_genre
 from pydantic import BaseModel, Field
-from settings import GENRE_INDEX_NAME, SETTINGS, SHOW_INDEX_NAME, PERSON_INDEX_NAME
+from settings import (GENRE_INDEX_NAME, PERSON_INDEX_NAME, SETTINGS,
+                      SHOW_INDEX_NAME)
 
 
 def es_create_show_index(client):
