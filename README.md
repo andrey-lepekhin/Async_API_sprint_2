@@ -1,30 +1,33 @@
 <h1 align="center">Hi there, We are 13`th Team!
 <img src="https://github.com/blackcater/blackcater/raw/main/images/Hi.gif" height="32"/></h1>
 
-# WEB-sevice Online Cinema
+# Online Cinema API
+Sprint 4 in Practicum middle-python course.  
+Teamwork of
+* [Andrey Lepekhin](https://github.com/andrey-lepekhin)
+* [Polina](https://github.com/Polinavas95)
 
 ## How to run
-1. Use this command to build containers
 ```
-make first_run
+make first_run  # will create .env files from examples and launch containers
 ```
-Wait for building.
-Elasticsearch is available at the [link](http://localhost:9200/)
+Wait ~1 min for building and ETL to spin up.  
+FastAPI docs are available at [http://127.0.0.1:8000/api/openapi](http://127.0.0.1:8000/api/openapi)
 
-2. Use this commands to open bash in a container
-```
-make run         - rebuild containers
-make postgresql         - postgresql container controls
-make elasticsearch      - elasticsearch container controls
-make etl                - etl container controls
-make redis              - redis container controls
-make shows_async        - async-container controls
-```
-3. Use this command to stop containers
+### To stop
 ```
 make stop
 ```
 
-### 
+### More commands
+```
+make run                - start without rewriting env files
+make postgresql         - postgresql container console
+make elasticsearch      - elasticsearch container console
+make etl                - etl container console
+make redis              - redis container console
+make shows_async        - async-container console
+```
 
-Have a nice day
+
+Have a nice day :)
