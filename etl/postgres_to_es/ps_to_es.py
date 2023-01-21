@@ -161,9 +161,11 @@ class Genre(BaseModel):
 
 
 class EsDataclass(BaseModel):
+    class Config:
+        allow_population_by_field_name = True
     id: str
     underscore_id: str = Field(alias='_id') # публичное имя
-    imdb_rating: Optional[float] = None
+    imdb_rating: Optional[float] = Field(None, ge=0, le=10)
     genres: Optional[List[Genre]] = None
     title: Optional[str] = None
     description: Optional[str] = None
@@ -175,6 +177,8 @@ class EsDataclass(BaseModel):
 
 
 class EsDataclassGenre(BaseModel):
+    class Config:
+        allow_population_by_field_name = True
     id: str
     underscore_id: str = Field(alias='_id')
     name: Optional[str] = None
@@ -182,6 +186,8 @@ class EsDataclassGenre(BaseModel):
 
 
 class EsDataclassPerson(BaseModel):
+    class Config:
+        allow_population_by_field_name = True
     id: str
     underscore_id: str = Field(alias='_id')
     full_name: Optional[str] = None

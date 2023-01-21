@@ -18,6 +18,12 @@ make first_run  # will create .env files from examples and launch containers
 Wait ~1 min for building and ETL to spin up.  
 FastAPI docs are available at [http://127.0.0.1:8000/api/openapi](http://127.0.0.1:8000/api/openapi)
 
+### Generate fake data
+```
+make generate_data
+```
+Will generate and add 1 mln fake persons, 100 fake genres and 400 000 fake shows. It will take up 10 minutes and ~1 GB of space.
+
 ### To stop
 ```
 make stop
