@@ -16,7 +16,7 @@ Teamwork of
 make first_run  # will create .env files from examples and launch containers
 ```
 Wait ~1 min for building and ETL to spin up.  
-FastAPI docs are available at [http://127.0.0.1:8000/api/openapi](http://127.0.0.1:8000/api/openapi)
+FastAPI docs are available at [http://127.0.0.1/api/openapi](http://127.0.0.1/api/openapi)
 
 ### Generate fake data
 ```
