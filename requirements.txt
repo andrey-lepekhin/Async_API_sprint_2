@@ -3,7 +3,7 @@ fastapi~=0.89
 orjson==3.6.4
 uvicorn==0.15.0
 uvloop==0.16.0
-pydantic==1.8.2
+pydantic==1.10.2
 python-dotenv==0.19.2
 Django~=3.2
 django-cors-headers==3.13.0
@@ -15,3 +15,4 @@ psycopg2~=2.9.5
 elasticsearch-dsl>=7.0.0,<8.0.0
 tqdm~=4.64
 faker~=16.4
+gunicorn~=20.1.0

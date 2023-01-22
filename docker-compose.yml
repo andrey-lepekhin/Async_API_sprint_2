@@ -52,6 +52,7 @@ services:
     container_name: async_api
     build:
       context: .
+      dockerfile: fastapi-solution/src/Dockerfile
     restart: always
     depends_on:
       - elasticsearch
