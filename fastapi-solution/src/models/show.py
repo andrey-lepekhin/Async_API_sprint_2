@@ -1,18 +1,13 @@
 from typing import List, Union
 
-import orjson
 from fastapi import Query
 from models.common_models import Genre, Person
 from models.filters import BaseSortFilter
+from models.mixins import BaseModelMixin
 from pydantic import UUID4, BaseModel
 
 
-def orjson_dumps(v, *, default):
-    # orjson.dumps возвращает bytes, а pydantic требует unicode, поэтому декодируем
-    return orjson.dumps(v, default=default).decode()
-
-
-class Show(BaseModel):
+class Show(BaseModelMixin):
     id: Union[UUID4, str]  # TODO: Redis.set fails if this is just UUID4, fix it?
     imdb_rating: float | None = None
     genres: List[Genre | None] = None
@@ -23,11 +18,6 @@ class Show(BaseModel):
     writers_names: List[str] | None = None
     actors: List[Person] | None = None
     writers: List[Person] | None = None
-
-    class Config:
-        # Заменяем стандартную работу с json на более быструю
-        json_loads = orjson.loads
-        json_dumps = orjson_dumps
 
 
 class ShowGenreFilter:

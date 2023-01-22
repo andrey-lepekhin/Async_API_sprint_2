@@ -1,14 +1,14 @@
 from typing import List
 
-from models.base import BaseModel
+from models.mixins import BaseModelMixin
 from pydantic import UUID4, Field
 
 
-class Genre(BaseModel):
+class Genre(BaseModelMixin):
     id: UUID4 = Field(alias="uuid")
 
 
-class Person(BaseModel):
+class Person(BaseModelMixin):
     id: UUID4 = Field(alias="uuid")
 
 
