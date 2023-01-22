@@ -1,9 +1,10 @@
 from http import HTTPStatus
 from typing import List
 
-from core.config import CACHE_EXPIRE_IN_SECONDS
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from fastapi_cache.decorator import cache
+
+from core.config import CACHE_EXPIRE_IN_SECONDS
 from models.filters import PaginationFilter
 from models.show import Show, ShowGenreFilter, ShowSortFilter
 from services.show import ShowService, get_show_service

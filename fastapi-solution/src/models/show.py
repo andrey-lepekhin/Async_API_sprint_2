@@ -1,10 +1,11 @@
 from typing import List, Union
 
 from fastapi import Query
+from pydantic import UUID4, BaseModel
+
 from models.common_models import Genre, Person
 from models.filters import BaseSortFilter
 from models.mixins import BaseModelMixin
-from pydantic import UUID4, BaseModel
 
 
 class Show(BaseModelMixin):

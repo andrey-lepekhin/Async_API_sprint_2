@@ -1,13 +1,15 @@
 from http import HTTPStatus
 from typing import List, Union
 
-from core.config import CACHE_EXPIRE_IN_SECONDS
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi_cache.decorator import cache
-from models.filters import PaginationFilter
-from models.genre import Genre, GenreSortFilter
 from pydantic import UUID4, BaseModel
+
+from models.filters import PaginationFilter
 from services.genre import GenreService, get_genre_service
+from models.genre import Genre, GenreSortFilter
+
+from core.config import CACHE_EXPIRE_IN_SECONDS
 
 router = APIRouter()
 

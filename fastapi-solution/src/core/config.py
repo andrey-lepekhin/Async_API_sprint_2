@@ -1,8 +1,10 @@
+import logging
 import os
 from logging import config as logging_config
 
-from core.logger import LOGGING
 from dotenv import find_dotenv, load_dotenv
+
+from core.logger import LOGGING
 
 # Raise error if no .env file found
 load_dotenv(find_dotenv(raise_error_if_not_found=False))
@@ -16,6 +18,8 @@ PROJECT_NAME = os.getenv('PROJECT_NAME', 'Movies')
 # Настройки Redis
 REDIS_HOST = os.getenv('REDIS_HOST')
 REDIS_PORT = int(os.getenv('REDIS_PORT', 6379))
+
+LOG_LEVEL = logging.DEBUG
 
 # Настройки Elasticsearch
 ELASTIC_HOST = os.getenv('ELASTIC_HOST')
