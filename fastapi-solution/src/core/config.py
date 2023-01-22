@@ -20,6 +20,7 @@ REDIS_HOST = os.getenv('REDIS_HOST')
 REDIS_PORT = int(os.getenv('REDIS_PORT', 6379))
 
 LOG_LEVEL = logging.DEBUG
+LOGGING=LOGGING
 
 # Настройки Elasticsearch
 ELASTIC_HOST = os.getenv('ELASTIC_HOST')

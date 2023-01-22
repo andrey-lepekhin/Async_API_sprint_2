@@ -50,6 +50,6 @@ if __name__ == '__main__':
         'main:app',
         host=os.environ.get('SERVER_HOST'),
         port=int(os.environ.get('SERVER_PORT')),
-        log_config=LOGGING,
+        log_config=config.LOGGING,
         log_level=config.LOG_LEVEL,
     )
