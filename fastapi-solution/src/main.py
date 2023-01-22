@@ -1,7 +1,9 @@
-import logging
 import os
 
 import uvicorn
+from api.v1.api import api_router as api_router_v1
+from core.config import settings
+from db import elastic, redis
 from elasticsearch import AsyncElasticsearch
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
@@ -9,14 +11,8 @@ from fastapi_cache import FastAPICache
 from fastapi_cache.backends.redis import RedisBackend
 from redis import asyncio as aioredis
 
-from api.v1.api import api_router as api_router_v1
-from core import config
-from core.config import API_V1_BASE_ROUTE
-from core.logger import LOGGING
-from db import elastic, redis
-
 app = FastAPI(
-    title=config.PROJECT_NAME,
+    title=settings.project_name,
     docs_url='/api/openapi',
     openapi_url='/api/openapi.json',
     default_response_class=ORJSONResponse,
@@ -26,10 +22,10 @@ app = FastAPI(
 @app.on_event('startup')
 async def startup():
     elastic.es = AsyncElasticsearch(
-        hosts=[f'http://{config.ELASTIC_HOST}:{config.ELASTIC_PORT}']
+        hosts=[settings.elastic_dsn]
     )
     redis.redis = aioredis.from_url(
-        f'redis://{config.REDIS_HOST}:{config.REDIS_PORT}',
+        settings.redis_dsn,
         max_connections=10,
         encoding="utf8",
         decode_responses=True,
@@ -43,13 +39,13 @@ async def shutdown():
     await elastic.es.close()
 
 
-app.include_router(api_router_v1, prefix=API_V1_BASE_ROUTE)
+app.include_router(api_router_v1, prefix=settings.api_v1_base_route)
 
 if __name__ == '__main__':
     uvicorn.run(
         'main:app',
         host=os.environ.get('SERVER_HOST'),
         port=int(os.environ.get('SERVER_PORT')),
-        log_config=config.LOGGING,
-        log_level=config.LOG_LEVEL,
+        log_config=settings.logging_config,
+        log_level=settings.log_level,
     )

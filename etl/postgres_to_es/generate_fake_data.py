@@ -1,8 +1,5 @@
 import logging
-import os
 import random
-from datetime import date
-from time import sleep
 
 from elasticsearch import Elasticsearch
 from elasticsearch.helpers import streaming_bulk
@@ -10,9 +7,9 @@ from faker import Faker
 from load_data import (es_create_genre_index, es_create_person_index,
                        es_create_show_index)
 from ps_to_es import EsDataclass, EsDataclassGenre, EsDataclassPerson
-from pydantic import UUID4, BaseModel, Field, validator
-from settings import GENRE_INDEX_NAME, PERSON_INDEX_NAME, SHOW_INDEX_NAME
-from tqdm import tqdm, trange
+from tqdm import tqdm
+
+from settings import settings
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -43,7 +40,9 @@ fake = Faker(['en_US', 'ru_RU'])
 fake_persons = []
 for _ in tqdm(range(NUM_PERSONS), desc='Generating persons'):
     id = fake.uuid4()
-    fake_persons.append(EsDataclassPerson(id=id, underscore_id=id, full_name=fake.name()))
+    fake_persons.append(
+        EsDataclassPerson(id=id, underscore_id=id, full_name=fake.name())
+    )
 
 
 # Generate Shows
@@ -72,12 +71,23 @@ def generate_fake_genre(fake_genres):
     for fg in fake_genres:
         yield fg.dict(by_alias=True)
 
+
 def generate_fake_person(fake_persons):
     for fp in fake_persons:
         yield fp.dict(by_alias=True)
 
-def push_fake_data_to_elastic(es_client, index, action, total_number):
-    progress = tqdm(unit="docs", desc=f'Pushing data to {index}', total=total_number)
+
+def push_fake_data_to_elastic(
+        es_client,
+        index,
+        action,
+        total_number
+):
+    progress = tqdm(
+        unit="docs",
+        desc=f'Pushing data to {index}',
+        total=total_number
+    )
     successes = 0
 
     for ok, action in streaming_bulk(
@@ -95,11 +105,25 @@ def push_fake_data_to_elastic(es_client, index, action, total_number):
         logger.debug(action)
 
 
-es_client = Elasticsearch(hosts=os.environ.get('ES_HOST', 'http://elasticsearch:9200'))
+es_client = Elasticsearch(
+    hosts=settings.elastic_dsn
+)
 es_create_genre_index(es_client)
 es_create_person_index(es_client)
 es_create_show_index(es_client)
 
-push_fake_data_to_elastic(es_client, GENRE_INDEX_NAME, generate_fake_genre(fake_genres), NUM_GENRES)
-push_fake_data_to_elastic(es_client, PERSON_INDEX_NAME, generate_fake_person(fake_persons), NUM_PERSONS)
-push_fake_data_to_elastic(es_client, SHOW_INDEX_NAME, generate_fake_show(fake_persons,fake_genres), NUM_SHOWS)
+push_fake_data_to_elastic(
+    es_client, settings.genre_index_name,
+    generate_fake_genre(fake_genres), NUM_GENRES
+)
+push_fake_data_to_elastic(
+    es_client, settings.person_index_name,
+    generate_fake_person(fake_persons),
+    NUM_PERSONS
+)
+push_fake_data_to_elastic(
+    es_client,
+    settings.show_index_name,
+    generate_fake_show(fake_persons, fake_genres),
+    NUM_SHOWS
+)

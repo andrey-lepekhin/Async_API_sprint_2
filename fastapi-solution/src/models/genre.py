@@ -1,9 +1,8 @@
 from typing import Union
 
-from pydantic import UUID4
-
 from models.filters import BaseSortFilter
 from models.mixins import BaseModelMixin
+from pydantic import UUID4
 
 
 class Genre(BaseModelMixin):

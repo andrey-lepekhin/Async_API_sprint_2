@@ -1,15 +1,14 @@
 from typing import Union
 
 from fastapi import Query
-from pydantic import UUID4, BaseModel
-
 from models.common_models import Genre, Person
 from models.filters import BaseSortFilter
 from models.mixins import BaseModelMixin
+from pydantic import UUID4
 
 
 class Show(BaseModelMixin):
-    id: Union[UUID4, str]  # TODO: Redis.set fails if this is just UUID4, fix it?
+    id: Union[UUID4, str]
     imdb_rating: float | None = None
     genres: list[Genre | None] = None
     title: str | None = None

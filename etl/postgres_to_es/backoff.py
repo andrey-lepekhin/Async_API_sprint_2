@@ -9,7 +9,12 @@ import psycopg2
 loggerb = logging.getLogger(__name__)
 
 
-def my_backoff(start_sleep_time=0.1, factor=2, border_sleep_time=10, logger=loggerb) -> Any:
+def my_backoff(
+        start_sleep_time=0.1,
+        factor=2,
+        border_sleep_time=10,
+        logger=loggerb
+) -> Any:
     """Функция для повторного выполнения функции через некоторое время, если
     возникла ошибка.
     Args:

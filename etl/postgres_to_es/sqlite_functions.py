@@ -29,7 +29,9 @@ def get_lsl_from_sqlite(sqlite_db_path):
         sqlite_cursor.execute(delete_old_states)
         last_successful_load = sqlite_cursor.execute(last_success_load_time).fetchone()
         if last_successful_load is None:
-            last_successful_load = [datetime.datetime(1970, 1, 1).isoformat(timespec='seconds')]
+            last_successful_load = [
+                datetime.datetime(1970, 1, 1).isoformat(timespec='seconds')
+            ]
             logger.debug('LSL не найден')
     return last_successful_load[0]
 
@@ -42,5 +44,8 @@ def save_to_sqlite(start_time, etl_successful, sqlite_db_path) -> None:
         sqlite_cursor = _connection.cursor()
         time = datetime.datetime.now().isoformat(timespec='seconds')
         sqlite_cursor.execute(
-            insert_last_successful_load_time.format(start_time.isoformat(timespec='seconds'), etl_successful, time),
+            insert_last_successful_load_time.format(
+                start_time.isoformat(timespec='seconds'),
+                etl_successful, time
+            ),
         )

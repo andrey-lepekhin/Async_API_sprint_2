@@ -1,15 +1,13 @@
 from http import HTTPStatus
 from typing import Union
 
+from core.config import settings
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi_cache.decorator import cache
-from pydantic import BaseModel, UUID4
-
 from models.filters import PaginationFilter, QueryFilter
-from services.person import PersonService, get_person_service
 from models.person import Person, PersonSortFilter
-
-from core.config import CACHE_EXPIRE_IN_SECONDS
+from pydantic import UUID4, BaseModel
+from services.person import PersonService, get_person_service
 
 router = APIRouter()
 
@@ -19,10 +17,10 @@ class SinglePersonAPIResponse(BaseModel):
     full_name: str | None = None
 
 
-# Pydantic supports the creation of generic models to make it easier to reuse a common model structure
+# Pydantic supports the creation of generic models
 @router.get('', response_model=list[Person] | None)
 @router.get('/search', response_model=list[Person] | None)
-@cache(expire=CACHE_EXPIRE_IN_SECONDS)
+@cache(expire=settings.cache_expiration_in_seconds)
 async def person_list(
         query_filter: QueryFilter = Depends(),
         person_sort_filter: PersonSortFilter = Depends(),
@@ -46,7 +44,7 @@ async def person_list(
 
 
 @router.get('/{person_id}', response_model=SinglePersonAPIResponse)
-@cache(expire=CACHE_EXPIRE_IN_SECONDS)
+@cache(expire=settings.cache_expiration_in_seconds)
 async def person_details(
         person_id: str,
         person_service: PersonService = Depends(get_person_service),
@@ -59,5 +57,7 @@ async def person_details(
     """
     person = await person_service.get_by_id(person_id)
     if not person:
-        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail=f"id: '{person_id}' is not found")
+        raise HTTPException(
+            status_code=HTTPStatus.NOT_FOUND, detail=f"id: '{person_id}' is not found"
+        )
     return SinglePersonAPIResponse(**person.dict())

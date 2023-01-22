@@ -1,11 +1,10 @@
 from functools import lru_cache
 
+from core.config import settings
+from db.elastic import get_elastic
 from elasticsearch import AsyncElasticsearch, NotFoundError
 from elasticsearch_dsl import Search
 from fastapi import Depends
-
-from core.config import PERSON_INDEX_NAME
-from db.elastic import get_elastic
 from models.filters import PaginationFilter, QueryFilter
 from models.person import Person, PersonSortFilter
 from services.utils import paginate_es_query
@@ -22,7 +21,9 @@ class PersonService:
         :return: Person | None
         """
         try:
-            doc = await self.elastic.get(index=PERSON_INDEX_NAME, id=person_id)
+            doc = await self.elastic.get(
+                index=settings.person_index_name, id=person_id
+            )
         except NotFoundError:
             return None
         return Person(**doc['_source'])
@@ -44,15 +45,21 @@ class PersonService:
                 ]
             )
         query_body = paginate_es_query(
-            query=es_query, page_size=pagination.page_size, page_number=pagination.page_number
+            query=es_query,
+            page_size=pagination.page_size,
+            page_number=pagination.page_number
         ).to_dict()
         search = await self.elastic.search(
-            index=PERSON_INDEX_NAME, body=query_body, sort=sort._get_sort_for_elastic()
+            index=settings.person_index_name,
+            body=query_body,
+            sort=sort._get_sort_for_elastic()
         )
         items = [Person(**hit['_source']) for hit in search['hits']['hits']]
         return items
 
 
 @lru_cache()
-def get_person_service(elastic: AsyncElasticsearch = Depends(get_elastic)) -> PersonService:
+def get_person_service(
+        elastic: AsyncElasticsearch = Depends(get_elastic)
+) -> PersonService:
     return PersonService(elastic)

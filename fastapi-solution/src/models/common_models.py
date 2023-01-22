@@ -1,6 +1,5 @@
-from pydantic import UUID4, Field
-
 from models.mixins import BaseModelMixin
+from pydantic import UUID4, Field
 
 
 class Genre(BaseModelMixin):

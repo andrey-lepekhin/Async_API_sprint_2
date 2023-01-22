@@ -23,7 +23,7 @@ class BaseSortFilter(BaseModel):
     class Config:
         allowed_filter_field_names = []
 
-    @validator("sort") # TODO: add duplicate params error
+    @validator("sort")
     def restrict_sortable_fields(cls, value):
         if value is None:
             return None
@@ -33,8 +33,8 @@ class BaseSortFilter(BaseModel):
         field_name = value.replace("+", "").replace("-", "")
         if field_name not in allowed_field_names:
             raise HTTPException(
-                HTTPStatus.BAD_REQUEST, f"You tried to sort by '{field_name}', "
-                                        f"but you may only sort by: {', '.join(allowed_field_names)}"
+                HTTPStatus.BAD_REQUEST, f"You tried to sort by '{field_name}',"
+                                        f" but you may only sort by: {', '.join(allowed_field_names)}"
             )
 
         return value
@@ -42,7 +42,10 @@ class BaseSortFilter(BaseModel):
 
 class PaginationFilter:
     MAX_RESULTS = 10000
-    # TODO: переделать пагинацию чтобы работала на больших объемах данных, возможно с search_after эластика и прочие point in time https://www.elastic.co/guide/en/elasticsearch/reference/current/paginate-search-results.html
+    # TODO: переделать пагинацию чтобы работала на больших объемах данных, возможно с search_after
+    #  эластика и прочие point in time
+    #  https://www.elastic.co/guide/en/elasticsearch/reference/current/paginate-search-results.html
+
     def __init__(
             self,
             page_size: int = Query(10, alias="page[size]", ge=1, le=1000),
@@ -56,6 +59,7 @@ class PaginationFilter:
             )
         self.page_size = page_size
         self.page_number = page_number
+
 
 class QueryFilter:
     def __init__(

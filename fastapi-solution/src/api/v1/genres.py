@@ -1,15 +1,13 @@
 from http import HTTPStatus
 from typing import Union
 
+from core.config import settings
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi_cache.decorator import cache
-from pydantic import UUID4, BaseModel
-
 from models.filters import PaginationFilter
-from services.genre import GenreService, get_genre_service
 from models.genre import Genre, GenreSortFilter
-
-from core.config import CACHE_EXPIRE_IN_SECONDS
+from pydantic import UUID4, BaseModel
+from services.genre import GenreService, get_genre_service
 
 router = APIRouter()
 
@@ -20,9 +18,9 @@ class SingleGenreAPIResponse(BaseModel):
     description: str | None = None
 
 
-# Pydantic supports the creation of generic models to make it easier to reuse a common model structure
+# Pydantic supports the creation of generic models
 @router.get('', response_model=list[Genre] | None)
-@cache(expire=CACHE_EXPIRE_IN_SECONDS)
+@cache(expire=settings.cache_expiration_in_seconds)
 async def genre_list(
         genre_sort_filter: GenreSortFilter = Depends(),
         pagination_filter: PaginationFilter = Depends(),
@@ -43,7 +41,7 @@ async def genre_list(
 
 
 @router.get('/{genre_id}', response_model=SingleGenreAPIResponse)
-@cache(expire=CACHE_EXPIRE_IN_SECONDS)
+@cache(expire=settings.cache_expiration_in_seconds)
 async def genre_details(
         genre_id: str,
         genre_service: GenreService = Depends(get_genre_service),
@@ -56,5 +54,8 @@ async def genre_details(
     """
     genre = await genre_service.get_by_id(genre_id)
     if not genre:
-        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail=f"id: '{genre_id}' is not found")
+        raise HTTPException(
+            status_code=HTTPStatus.NOT_FOUND,
+            detail=f"id: '{genre_id}' is not found"
+        )
     return SingleGenreAPIResponse(**genre.dict())

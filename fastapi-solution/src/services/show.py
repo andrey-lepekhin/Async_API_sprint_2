@@ -1,11 +1,10 @@
 from functools import lru_cache
 
+from core.config import settings
+from db.elastic import get_elastic
 from elasticsearch import AsyncElasticsearch, NotFoundError
 from elasticsearch_dsl import Q, Search
 from fastapi import Depends
-
-from core.config import SHOW_INDEX_NAME
-from db.elastic import get_elastic
 from models.filters import PaginationFilter, QueryFilter
 from models.show import Show, ShowGenreFilter, ShowSortFilter
 from services.utils import paginate_es_query
@@ -22,7 +21,9 @@ class ShowService:
         :return: Show | None
         """
         try:
-            doc = await self.elastic.get(index=SHOW_INDEX_NAME, id=show_id)
+            doc = await self.elastic.get(
+                index=settings.show_index_name, id=show_id
+            )
         except NotFoundError:
             return None
         return Show(**doc['_source'])
@@ -38,7 +39,9 @@ class ShowService:
         es_query = s
         if filter_genre.genre_id:
             es_query = s.filter(
-                'nested', path='genres', query=Q('term', genres__id=filter_genre.genre_id)
+                'nested',
+                path='genres',
+                query=Q('term', genres__id=filter_genre.genre_id)
             )
         if query.query:
             es_query = es_query.query(
@@ -53,15 +56,21 @@ class ShowService:
                 ]
             )
         query_body = paginate_es_query(
-            query=es_query, page_size=pagination.page_size, page_number=pagination.page_number
+            query=es_query,
+            page_size=pagination.page_size,
+            page_number=pagination.page_number
         ).to_dict()
         search = await self.elastic.search(
-            index=SHOW_INDEX_NAME, body=query_body, sort=sort._get_sort_for_elastic()
+            index=settings.show_index_name,
+            body=query_body,
+            sort=sort._get_sort_for_elastic()
         )
         items = [Show(**hit['_source']) for hit in search['hits']['hits']]
         return items
 
 
 @lru_cache()
-def get_show_service(elastic: AsyncElasticsearch = Depends(get_elastic)) -> ShowService:
+def get_show_service(
+        elastic: AsyncElasticsearch = Depends(get_elastic)
+) -> ShowService:
     return ShowService(elastic)
