@@ -1,5 +1,5 @@
 from http import HTTPStatus
-from typing import List, Union
+from typing import Union
 
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi_cache.decorator import cache
@@ -21,19 +21,19 @@ class SingleGenreAPIResponse(BaseModel):
 
 
 # Pydantic supports the creation of generic models to make it easier to reuse a common model structure
-@router.get('', response_model=List[Genre] | None)
+@router.get('', response_model=list[Genre] | None)
 @cache(expire=CACHE_EXPIRE_IN_SECONDS)
 async def genre_list(
         genre_sort_filter: GenreSortFilter = Depends(),
         pagination_filter: PaginationFilter = Depends(),
         genre_service: GenreService = Depends(get_genre_service),
-) -> List[Genre] | None:
+) -> list[Genre] | None:
     """
     Gets a list of genres.
     :param pagination_filter: pagination filter
     :param genre_sort_filter: genre filter
     :param genre_service: genre service
-    :return: List[Genre] | None
+    :return: list[Genre] | None
     """
     items = await genre_service.get_many_with_filter_sort_pagination(
         sort=genre_sort_filter,

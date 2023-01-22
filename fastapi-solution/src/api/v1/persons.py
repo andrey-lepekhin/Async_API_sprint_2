@@ -1,5 +1,5 @@
 from http import HTTPStatus
-from typing import List, Union
+from typing import Union
 
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi_cache.decorator import cache
@@ -20,22 +20,22 @@ class SinglePersonAPIResponse(BaseModel):
 
 
 # Pydantic supports the creation of generic models to make it easier to reuse a common model structure
-@router.get('', response_model=List[Person] | None)
-@router.get('/search', response_model=List[Person] | None)
+@router.get('', response_model=list[Person] | None)
+@router.get('/search', response_model=list[Person] | None)
 @cache(expire=CACHE_EXPIRE_IN_SECONDS)
 async def person_list(
         query_filter: QueryFilter = Depends(),
         person_sort_filter: PersonSortFilter = Depends(),
         pagination_filter: PaginationFilter = Depends(),
         person_service: PersonService = Depends(get_person_service),
-) -> List[Person] | None:
+) -> list[Person] | None:
     """
     Gets a list of persons.
     :param query_filter:
     :param person_service: service
     :param person_sort_filter: person filter
     :param pagination_filter: pagination filter
-    :return: List[Person] | None
+    :return: list[Person] | None
     """
     items = await person_service.get_many_with_query_filter_sort_pagination(
         query=query_filter,

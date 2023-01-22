@@ -1,5 +1,4 @@
 from http import HTTPStatus
-from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from fastapi_cache.decorator import cache
@@ -17,8 +16,8 @@ class SingleShowAPIResponse(Show):
 
 
 # TODO: документировать параметры
-@router.get('', response_model=List[Show] | None)
-@router.get('/search', response_model=List[Show] | None)
+@router.get('', response_model=list[Show] | None)
+@router.get('/search', response_model=list[Show] | None)
 @cache(expire=CACHE_EXPIRE_IN_SECONDS)
 async def show_list(
         query_filter: QueryFilter = Depends(),
@@ -26,7 +25,7 @@ async def show_list(
         show_genre_filter: ShowGenreFilter = Depends(),
         pagination_filter: PaginationFilter = Depends(),
         show_service: ShowService = Depends(get_show_service),
-) -> List[Show] | None:
+) -> list[Show] | None:
     """
     Gets a list of genres.
     :param query_filter:
@@ -34,7 +33,7 @@ async def show_list(
     :param show_service: service
     :param show_genre_filter: show genre filter
     :param show_sort_filter: show sort filter
-    :return: List[Show] | None
+    :return: list[Show] | None
     """
     items = await show_service.get_many_with_query_filter_sort_pagination(
         query=query_filter,

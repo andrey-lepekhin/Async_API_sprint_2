@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import Union
 
 from fastapi import Query
 from pydantic import UUID4, BaseModel
@@ -11,14 +11,14 @@ from models.mixins import BaseModelMixin
 class Show(BaseModelMixin):
     id: Union[UUID4, str]  # TODO: Redis.set fails if this is just UUID4, fix it?
     imdb_rating: float | None = None
-    genres: List[Genre | None] = None
+    genres: list[Genre | None] = None
     title: str | None = None
     description: str | None = None
-    director: List[str] | None = None
-    actors_names: List[str] | None = None
-    writers_names: List[str] | None = None
-    actors: List[Person] | None = None
-    writers: List[Person] | None = None
+    director: list[str] | None = None
+    actors_names: list[str] | None = None
+    writers_names: list[str] | None = None
+    actors: list[Person] | None = None
+    writers: list[Person] | None = None
 
 
 class ShowGenreFilter:

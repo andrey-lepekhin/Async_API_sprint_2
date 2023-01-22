@@ -3,7 +3,6 @@ import os
 import random
 from datetime import date
 from time import sleep
-from typing import List
 
 from elasticsearch import Elasticsearch
 from elasticsearch.helpers import streaming_bulk

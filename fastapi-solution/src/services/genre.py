@@ -1,5 +1,4 @@
 from functools import lru_cache
-from typing import List
 
 from elasticsearch import AsyncElasticsearch, NotFoundError
 from elasticsearch_dsl import Search
@@ -32,7 +31,7 @@ class GenreService:
             self,
             sort: GenreSortFilter = Depends(),
             pagination: PaginationFilter = Depends(),
-    ) -> List[Genre] | None:
+    ) -> list[Genre] | None:
         s = Search()
         query = s
         query_body = paginate_es_query(

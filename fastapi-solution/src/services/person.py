@@ -1,5 +1,4 @@
 from functools import lru_cache
-from typing import List
 
 from elasticsearch import AsyncElasticsearch, NotFoundError
 from elasticsearch_dsl import Search
@@ -33,7 +32,7 @@ class PersonService:
             query: QueryFilter = Depends(),
             sort: PersonSortFilter = Depends(),
             pagination: PaginationFilter = Depends(),
-    ) -> List[Person] | None:
+    ) -> list[Person] | None:
         s = Search()
         es_query = s
         if query.query:

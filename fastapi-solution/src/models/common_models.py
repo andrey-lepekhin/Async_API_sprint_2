@@ -1,5 +1,3 @@
-from typing import List
-
 from pydantic import UUID4, Field
 
 from models.mixins import BaseModelMixin
@@ -14,5 +12,5 @@ class Person(BaseModelMixin):
 
 
 class PersonShow(Person):
-    role: List[str]
-    film_ids: List[UUID4]
+    role: list[str]
+    film_ids: list[UUID4]

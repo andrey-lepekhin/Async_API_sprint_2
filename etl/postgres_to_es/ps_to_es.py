@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import logging
-from typing import List
 
 from db_query import full_load, load_person_q, query_all_genre
 from pydantic import BaseModel, Field
@@ -166,14 +165,14 @@ class EsDataclass(BaseModel):
     id: str
     underscore_id: str = Field(alias='_id') # публичное имя
     imdb_rating: float | None = Field(None, ge=0, le=10)
-    genres: List[Genre] | None = None
+    genres: list[Genre] | None = None
     title: str | None = None
     description: str | None = None
-    director: List[str] | None = None
-    actors_names: List[str] | None = None
-    writers_names: List[str] | None = None
-    actors: List[Person] | None = None
-    writers: List[Person] | None = None
+    director: list[str] | None = None
+    actors_names: list[str] | None = None
+    writers_names: list[str] | None = None
+    actors: list[Person] | None = None
+    writers: list[Person] | None = None
 
 
 class EsDataclassGenre(BaseModel):
