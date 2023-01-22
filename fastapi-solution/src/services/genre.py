@@ -1,5 +1,5 @@
 from functools import lru_cache
-from typing import List, Optional
+from typing import List
 
 from core.config import GENRE_INDEX_NAME
 from db.elastic import get_elastic
@@ -15,11 +15,11 @@ class GenreService:
     def __init__(self, elastic: AsyncElasticsearch):
         self.elastic = elastic
 
-    async def get_by_id(self, genre_id: str) -> Optional[Genre]:
+    async def get_by_id(self, genre_id: str) -> Genre | None:
         """
         Gets a single genre by its ID from ES.
         :param genre_id: id
-        :return: Optional[Genre]
+        :return: Genre | None
         """
         try:
             doc = await self.elastic.get(index=GENRE_INDEX_NAME, id=genre_id)
@@ -31,7 +31,7 @@ class GenreService:
             self,
             sort: GenreSortFilter = Depends(),
             pagination: PaginationFilter = Depends(),
-    ) -> Optional[List[Genre]]:
+    ) -> List[Genre] | None:
         s = Search()
         query = s
         query_body = paginate_es_query(

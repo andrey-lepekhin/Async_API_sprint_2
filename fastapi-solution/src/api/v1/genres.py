@@ -1,39 +1,37 @@
 from http import HTTPStatus
-from typing import List, Optional, Union
-
-from fastapi import APIRouter, Depends, HTTPException
-from fastapi_cache.decorator import cache
-from pydantic import UUID4, BaseModel
-
-from models.filters import PaginationFilter
-from services.genre import GenreService, get_genre_service
-from models.genre import Genre, GenreSortFilter
+from typing import List, Union
 
 from core.config import CACHE_EXPIRE_IN_SECONDS
+from fastapi import APIRouter, Depends, HTTPException
+from fastapi_cache.decorator import cache
+from models.filters import PaginationFilter
+from models.genre import Genre, GenreSortFilter
+from pydantic import UUID4, BaseModel
+from services.genre import GenreService, get_genre_service
 
 router = APIRouter()
 
 
 class SingleGenreAPIResponse(BaseModel):
     id: Union[UUID4, str]
-    name: Optional[str] = None
-    description: Optional[str] = None
+    name: str | None = None
+    description: str | None = None
 
 
 # Pydantic supports the creation of generic models to make it easier to reuse a common model structure
-@router.get('', response_model=Optional[List[Genre]])
+@router.get('', response_model=List[Genre] | None)
 @cache(expire=CACHE_EXPIRE_IN_SECONDS)
 async def genre_list(
         genre_sort_filter: GenreSortFilter = Depends(),
         pagination_filter: PaginationFilter = Depends(),
         genre_service: GenreService = Depends(get_genre_service),
-) -> Optional[List[Genre]]:
+) -> List[Genre] | None:
     """
     Gets a list of genres.
     :param pagination_filter: pagination filter
     :param genre_sort_filter: genre filter
     :param genre_service: genre service
-    :return: Optional[List[Genre]]
+    :return: List[Genre] | None
     """
     items = await genre_service.get_many_with_filter_sort_pagination(
         sort=genre_sort_filter,

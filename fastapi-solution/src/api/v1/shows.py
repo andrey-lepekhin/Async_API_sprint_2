@@ -1,5 +1,5 @@
 from http import HTTPStatus
-from typing import List, Optional
+from typing import List
 
 from core.config import CACHE_EXPIRE_IN_SECONDS
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
@@ -16,20 +16,20 @@ class SingleShowAPIResponse(Show):
 
 
 # TODO: документировать параметры
-@router.get('', response_model=Optional[List[Show]])
+@router.get('', response_model=List[Show] | None)
 @cache(expire=CACHE_EXPIRE_IN_SECONDS)
 async def show_list(
         show_sort_filter: ShowSortFilter = Depends(),
         show_genre_filter: ShowGenreFilter = Depends(),
         pagination_filter: PaginationFilter = Depends(),
         show_service: ShowService = Depends(get_show_service),
-) -> Optional[List[Show]]:
+) -> List[Show] | None:
     """
     Gets a list of genres.
     :param show_service: service
-    :param show_genre_filter: show filter
-    :param show_sort_filter: show filter
-    :return: Optional[List[Show]]
+    :param show_genre_filter: show genre filter
+    :param show_sort_filter: show sort filter
+    :return: List[Show] | None
     """
     items = await show_service.get_many_with_filter_sort_pagination(
         filter_genre=show_genre_filter,

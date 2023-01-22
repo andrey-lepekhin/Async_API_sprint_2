@@ -1,4 +1,4 @@
-from typing import List, Optional, Union
+from typing import List, Union
 
 import orjson
 from fastapi import Query
@@ -14,15 +14,15 @@ def orjson_dumps(v, *, default):
 
 class Show(BaseModel):
     id: Union[UUID4, str]  # TODO: Redis.set fails if this is just UUID4, fix it?
-    imdb_rating: Optional[float] = None
-    genres: Optional[List[Genre]] = None
-    title: Optional[str] = None
-    description: Optional[str] = None
-    director: Optional[List[str]] = None
-    actors_names: Optional[List[str]] = None
-    writers_names: Optional[List[str]] = None
-    actors: Optional[List[Person]] = None
-    writers: Optional[List[Person]] = None
+    imdb_rating: float | None = None
+    genres: List[Genre | None] = None
+    title: str | None = None
+    description: str | None = None
+    director: List[str] | None = None
+    actors_names: List[str] | None = None
+    writers_names: List[str] | None = None
+    actors: List[Person] | None = None
+    writers: List[Person] | None = None
 
     class Config:
         # Заменяем стандартную работу с json на более быструю

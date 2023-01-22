@@ -1,12 +1,11 @@
 from http import HTTPStatus
-from typing import Optional
 
 from fastapi import HTTPException, Query
 from pydantic import BaseModel, validator
 
 
 class BaseSortFilter(BaseModel):
-    sort: Optional[str]
+    sort: str | None
 
     def _get_sort_for_elastic(self):
         # TODO: add support for list of sort fields

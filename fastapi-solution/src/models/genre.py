@@ -1,9 +1,8 @@
-from typing import Optional, Union
+from typing import Union
 
 import orjson
-from pydantic import UUID4, BaseModel
-
 from models.filters import BaseSortFilter
+from pydantic import UUID4, BaseModel
 
 
 def orjson_dumps(v, *, default):
@@ -13,8 +12,8 @@ def orjson_dumps(v, *, default):
 
 class Genre(BaseModel):
     id: Union[UUID4, str]
-    name: Optional[str] = None
-    description: Optional[str] = None
+    name: str | None = None
+    description: str | None = None
 
     class Config:
         # Заменяем стандартную работу с json на более быструю

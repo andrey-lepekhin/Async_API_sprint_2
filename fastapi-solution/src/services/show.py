@@ -1,5 +1,5 @@
 from functools import lru_cache
-from typing import List, Optional
+from typing import List
 
 from core.config import SHOW_INDEX_NAME
 from db.elastic import get_elastic
@@ -15,11 +15,11 @@ class ShowService:
     def __init__(self, elastic: AsyncElasticsearch):
         self.elastic = elastic
 
-    async def get_by_id(self, show_id: str) -> Optional[Show]:
+    async def get_by_id(self, show_id: str) -> Show | None:
         """
         Gets a single show by its ID from ES.
         :param show_id: id
-        :return: Optional[Show]
+        :return: Show | None
         """
         try:
             doc = await self.elastic.get(index=SHOW_INDEX_NAME, id=show_id)
@@ -32,7 +32,7 @@ class ShowService:
             filter_genre: ShowGenreFilter = Depends(),
             sort: ShowSortFilter = Depends(),
             pagination: PaginationFilter = Depends(),
-    ) -> Optional[List[Show]]:
+    ) -> List[Show] | None:
         s = Search()
         query = s
         if filter_genre.genre_id:
