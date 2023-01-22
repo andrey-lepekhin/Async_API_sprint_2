@@ -31,7 +31,7 @@ class PersonService:
     async def get_many_with_query_filter_sort_pagination(
             self,
             query: QueryFilter = Depends(),
-            sort: PersonSortFilter = Depends(),
+            # sort: PersonSortFilter = Depends(),
             pagination: PaginationFilter = Depends(),
     ) -> list[Person] | None:
         s = Search()
@@ -52,7 +52,7 @@ class PersonService:
         search = await self.elastic.search(
             index=settings.person_index_name,
             body=query_body,
-            sort=sort._get_sort_for_elastic()
+            # sort=sort._get_sort_for_elastic() # TODO: add support for this in index or remove sort
         )
         items = [Person(**hit['_source']) for hit in search['hits']['hits']]
         return items

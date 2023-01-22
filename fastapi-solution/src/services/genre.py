@@ -30,7 +30,7 @@ class GenreService:
 
     async def get_many_with_filter_sort_pagination(
             self,
-            sort: GenreSortFilter = Depends(),
+            # sort: GenreSortFilter = Depends(),
             pagination: PaginationFilter = Depends(),
     ) -> list[Genre] | None:
         s = Search()
@@ -43,7 +43,7 @@ class GenreService:
         search = await self.elastic.search(
             index=settings.genre_index_name,
             body=query_body,
-            sort=sort._get_sort_for_elastic()
+            #sort=sort._get_sort_for_elastic() # TODO: add support for this in index or remove sort
         )
         items = [Genre(**hit['_source']) for hit in search['hits']['hits']]
         return items
