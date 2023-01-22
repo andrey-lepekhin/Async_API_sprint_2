@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from typing import List, Optional
+from typing import List
 
 from db_query import full_load, load_person_q, query_all_genre
 from pydantic import BaseModel, Field
@@ -151,13 +151,13 @@ def es_create_person_index(client):
 
 class Person(BaseModel):
     id: str
-    full_name: Optional[str] = None
+    full_name: str | None = None
 
 
 class Genre(BaseModel):
     id: str
-    name: Optional[str] = None
-    description: Optional[str] = None
+    name: str | None = None
+    description: str | None = None
 
 
 class EsDataclass(BaseModel):
@@ -165,15 +165,16 @@ class EsDataclass(BaseModel):
         allow_population_by_field_name = True
     id: str
     underscore_id: str = Field(alias='_id') # публичное имя
-    imdb_rating: Optional[float] = Field(None, ge=0, le=10)
-    genres: Optional[List[Genre]] = None
-    title: Optional[str] = None
-    description: Optional[str] = None
-    director: Optional[List[str]] = None
-    actors_names: Optional[List[str]] = None
-    writers_names: Optional[List[str]] = None
-    actors: Optional[List[Person]] = None
-    writers: Optional[List[Person]] = None
+    imdb_rating: float | None = Field(None, ge=0, le=10)
+    genres: List[Genre] | None = None
+    title: str | None = None
+    description: str | None = None
+    director: List[str] | None = None
+    actors_names: List[str] | None = None
+    writers_names: List[str] | None = None
+    actors: List[Person] | None = None
+    writers: List[Person] | None = None
+
 
 
 class EsDataclassGenre(BaseModel):
@@ -181,8 +182,8 @@ class EsDataclassGenre(BaseModel):
         allow_population_by_field_name = True
     id: str
     underscore_id: str = Field(alias='_id')
-    name: Optional[str] = None
-    description: Optional[str] = None
+    name: str | None = None
+    description: str | None = None
 
 
 class EsDataclassPerson(BaseModel):
@@ -190,7 +191,7 @@ class EsDataclassPerson(BaseModel):
         allow_population_by_field_name = True
     id: str
     underscore_id: str = Field(alias='_id')
-    full_name: Optional[str] = None
+    full_name: str | None = None
 
 
 def validate_row_create_es_doc(row):

@@ -1,4 +1,4 @@
-from typing import Optional, Union
+from typing import Union
 
 import orjson
 from models.filters import BaseSortFilter
@@ -12,7 +12,7 @@ def orjson_dumps(v, *, default):
 
 class Person(BaseModel):
     id: Union[UUID4, str]  # TODO: Redis.set fails if this is just UUID4, fix it?
-    full_name: Optional[str] = None
+    full_name: str | None = None
 
     class Config:
         # Заменяем стандартную работу с json на более быструю

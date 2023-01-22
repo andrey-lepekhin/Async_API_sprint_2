@@ -1,5 +1,5 @@
 from functools import lru_cache
-from typing import List, Optional
+from typing import List
 
 from core.config import PERSON_INDEX_NAME
 from db.elastic import get_elastic
@@ -15,11 +15,11 @@ class PersonService:
     def __init__(self, elastic: AsyncElasticsearch):
         self.elastic = elastic
 
-    async def get_by_id(self, person_id: str) -> Optional[Person]:
+    async def get_by_id(self, person_id: str) -> Person | None:
         """
         Gets a single person by its ID from ES.
         :param person_id: id
-        :return: Optional[Person]
+        :return: Person | None
         """
         try:
             doc = await self.elastic.get(index=PERSON_INDEX_NAME, id=person_id)
@@ -31,7 +31,7 @@ class PersonService:
             self,
             sort: PersonSortFilter = Depends(),
             pagination: PaginationFilter = Depends(),
-    ) -> Optional[List[Person]]:
+    ) -> List[Person] | None:
         s = Search()
         query = s
         query_body = paginate_es_query(

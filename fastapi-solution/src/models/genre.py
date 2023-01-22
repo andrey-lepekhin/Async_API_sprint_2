@@ -1,4 +1,4 @@
-from typing import Optional, Union
+from typing import Union
 
 import orjson
 from models.filters import BaseSortFilter
@@ -12,8 +12,8 @@ def orjson_dumps(v, *, default):
 
 class Genre(BaseModel):
     id: Union[UUID4, str]
-    name: Optional[str] = None
-    description: Optional[str] = None
+    name: str | None = None
+    description: str | None = None
 
     class Config:
         # Заменяем стандартную работу с json на более быструю
