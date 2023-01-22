@@ -1,6 +1,7 @@
 """United API router for v1"""
-from api.v1 import genres, persons, shows
 from fastapi import APIRouter
+
+from api.v1 import genres, persons, shows
 
 api_router = APIRouter()
 api_router.include_router(shows.router, prefix="/shows", tags=["shows"])

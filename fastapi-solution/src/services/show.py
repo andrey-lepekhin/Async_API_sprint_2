@@ -1,11 +1,12 @@
 from functools import lru_cache
 from typing import List
 
-from core.config import SHOW_INDEX_NAME
-from db.elastic import get_elastic
 from elasticsearch import AsyncElasticsearch, NotFoundError
 from elasticsearch_dsl import Q, Search
 from fastapi import Depends
+
+from core.config import SHOW_INDEX_NAME
+from db.elastic import get_elastic
 from models.filters import PaginationFilter
 from models.show import Show, ShowGenreFilter, ShowSortFilter
 from services.utils import paginate_es_query

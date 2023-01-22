@@ -1,7 +1,8 @@
 from typing import List
 
-from models.mixins import BaseModelMixin
 from pydantic import UUID4, Field
+
+from models.mixins import BaseModelMixin
 
 
 class Genre(BaseModelMixin):
