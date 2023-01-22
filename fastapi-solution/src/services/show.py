@@ -7,7 +7,7 @@ from fastapi import Depends
 
 from core.config import SHOW_INDEX_NAME
 from db.elastic import get_elastic
-from models.filters import PaginationFilter
+from models.filters import PaginationFilter, QueryFilter
 from models.show import Show, ShowGenreFilter, ShowSortFilter
 from services.utils import paginate_es_query
 
@@ -28,20 +28,33 @@ class ShowService:
             return None
         return Show(**doc['_source'])
 
-    async def get_many_with_filter_sort_pagination(
+    async def get_many_with_query_filter_sort_pagination(
             self,
+            query: QueryFilter = Depends(),
             filter_genre: ShowGenreFilter = Depends(),
             sort: ShowSortFilter = Depends(),
             pagination: PaginationFilter = Depends(),
     ) -> List[Show] | None:
         s = Search()
-        query = s
+        es_query = s
         if filter_genre.genre_id:
-            query = s.filter(
+            es_query = s.filter(
                 'nested', path='genres', query=Q('term', genres__id=filter_genre.genre_id)
             )
+        if query.query:
+            es_query = es_query.query(
+                "multi_match",
+                query=query.query,
+                fields=[
+                    'title^5',
+                    'description^4',
+                    'actors_names^3',
+                    'director^2',
+                    'writers_names^1',
+                ]
+            )
         query_body = paginate_es_query(
-            query=query, page_size=pagination.page_size, page_number=pagination.page_number
+            query=es_query, page_size=pagination.page_size, page_number=pagination.page_number
         ).to_dict()
         search = await self.elastic.search(
             index=SHOW_INDEX_NAME, body=query_body, sort=sort._get_sort_for_elastic()

@@ -7,7 +7,7 @@ from fastapi import Depends
 
 from core.config import PERSON_INDEX_NAME
 from db.elastic import get_elastic
-from models.filters import PaginationFilter
+from models.filters import PaginationFilter, QueryFilter
 from models.person import Person, PersonSortFilter
 from services.utils import paginate_es_query
 
@@ -28,15 +28,24 @@ class PersonService:
             return None
         return Person(**doc['_source'])
 
-    async def get_many_with_filter_sort_pagination(
+    async def get_many_with_query_filter_sort_pagination(
             self,
+            query: QueryFilter = Depends(),
             sort: PersonSortFilter = Depends(),
             pagination: PaginationFilter = Depends(),
     ) -> List[Person] | None:
         s = Search()
-        query = s
+        es_query = s
+        if query.query:
+            es_query = es_query.query(
+                "multi_match",
+                query=query.query,
+                fields=[
+                    'full_name',
+                ]
+            )
         query_body = paginate_es_query(
-            query=query, page_size=pagination.page_size, page_number=pagination.page_number
+            query=es_query, page_size=pagination.page_size, page_number=pagination.page_number
         ).to_dict()
         search = await self.elastic.search(
             index=PERSON_INDEX_NAME, body=query_body, sort=sort._get_sort_for_elastic()
