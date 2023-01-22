@@ -90,8 +90,10 @@ def push_fake_data_to_elastic(es_client, index, action, total_number):
         max_backoff=10,
     ):
         progress.update(1)
+        if not ok:
+            logger.error(f'Error while streaming fake data to {index}')
         successes += ok
-
+        logger.debug(action)
 
 
 es_client = Elasticsearch(hosts=os.environ.get('ES_HOST', 'http://elasticsearch:9200'))
