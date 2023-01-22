@@ -9,7 +9,7 @@ run:
 
 generate_data:
 	#Generate fake data and push to ES
-	docker-compose exec etl python fastapi-solution/src/etl/postgres_to_es/generate_fake_data.py
+	docker-compose exec etl python etl/postgres_to_es/generate_fake_data.py
 
 postgresql:
 	#Запуск консоли для управления postgresql-контейнером.

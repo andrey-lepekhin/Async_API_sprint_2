@@ -20,7 +20,7 @@ class Settings(BaseSettings):
     elastic_dsn: str
 
     log_level: int = logging.DEBUG
-    logging_config:dict = LOGGING
+    logging_config: dict = LOGGING
 
     api_v1_base_route: str = '/api/v1'
 
