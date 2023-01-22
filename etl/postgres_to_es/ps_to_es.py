@@ -1,20 +1,16 @@
 from __future__ import annotations
 
-import logging
-from typing import List
-
 from db_query import full_load, load_person_q, query_all_genre
 from pydantic import BaseModel, Field
-from settings import (GENRE_INDEX_NAME, PERSON_INDEX_NAME, SETTINGS,
-                      SHOW_INDEX_NAME)
+from settings import settings
 
 
 def es_create_show_index(client):
     """Create shows index in Elasticsearch if one isn't already there."""
     client.indices.create(
-        index=SHOW_INDEX_NAME,
+        index=settings.show_index_name,
         body={
-            'settings': SETTINGS,
+            'settings': settings.es_common_index_settings,
             'mappings': {
                 'dynamic': 'strict',
                 'properties': {
@@ -102,9 +98,9 @@ def es_create_show_index(client):
 def es_create_genre_index(client):
     """Create genres index in Elasticsearch if one isn't already there."""
     client.indices.create(
-        index=GENRE_INDEX_NAME,
+        index=settings.genre_index_name,
         body={
-            'settings': SETTINGS,
+            'settings': settings.es_common_index_settings,
             'mappings': {
                 'dynamic': 'strict',
                 'properties': {
@@ -129,9 +125,9 @@ def es_create_genre_index(client):
 def es_create_person_index(client):
     """Create persons index in Elasticsearch if one isn't already there."""
     client.indices.create(
-        index=PERSON_INDEX_NAME,
+        index=settings.person_index_name,
         body={
-            'settings': SETTINGS,
+            'settings': settings.es_common_index_settings,
             'mappings': {
                 'dynamic': 'strict',
                 'properties': {
@@ -164,16 +160,16 @@ class EsDataclass(BaseModel):
     class Config:
         allow_population_by_field_name = True
     id: str
-    underscore_id: str = Field(alias='_id') # публичное имя
+    underscore_id: str = Field(alias='_id')  # публичное имя
     imdb_rating: float | None = Field(None, ge=0, le=10)
-    genres: List[Genre] | None = None
+    genres: list[Genre] | None = None
     title: str | None = None
     description: str | None = None
-    director: List[str] | None = None
-    actors_names: List[str] | None = None
-    writers_names: List[str] | None = None
-    actors: List[Person] | None = None
-    writers: List[Person] | None = None
+    director: list[str] | None = None
+    actors_names: list[str] | None = None
+    writers_names: list[str] | None = None
+    actors: list[Person] | None = None
+    writers: list[Person] | None = None
 
 
 class EsDataclassGenre(BaseModel):
@@ -208,9 +204,21 @@ def validate_row_create_es_doc(row):
 
     if row['persons'][0] is not None:
         persons = [dict_from_persons_str(p) for p in row['persons']]
-        directors = [Person(id=p['id'], full_name=p['full_name']) for p in persons if p['role'] == 'director']
-        actors = [Person(id=p['id'], full_name=p['full_name']) for p in persons if p['role'] == 'actor']
-        writers = [Person(id=p['id'], full_name=p['full_name']) for p in persons if p['role'] == 'writer']
+        directors = [
+            Person(
+                id=p['id'],
+                full_name=p['full_name']) for p in persons if p['role'] == 'director'
+        ]
+        actors = [
+            Person(
+                id=p['id'],
+                full_name=p['full_name']) for p in persons if p['role'] == 'actor'
+        ]
+        writers = [
+            Person(
+                id=p['id'],
+                full_name=p['full_name']) for p in persons if p['role'] == 'writer'
+        ]
     else:
         directors = actors = writers = []
 

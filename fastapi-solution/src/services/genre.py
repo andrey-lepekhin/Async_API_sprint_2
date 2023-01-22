@@ -1,12 +1,10 @@
 from functools import lru_cache
-from typing import List
 
+from core.config import settings
+from db.elastic import get_elastic
 from elasticsearch import AsyncElasticsearch, NotFoundError
 from elasticsearch_dsl import Search
 from fastapi import Depends
-
-from core.config import GENRE_INDEX_NAME
-from db.elastic import get_elastic
 from models.filters import PaginationFilter
 from models.genre import Genre, GenreSortFilter
 from services.utils import paginate_es_query
@@ -23,28 +21,36 @@ class GenreService:
         :return: Genre | None
         """
         try:
-            doc = await self.elastic.get(index=GENRE_INDEX_NAME, id=genre_id)
+            doc = await self.elastic.get(
+                index=settings.genre_index_name, id=genre_id
+            )
         except NotFoundError:
             return None
         return Genre(**doc['_source'])
 
     async def get_many_with_filter_sort_pagination(
             self,
-            sort: GenreSortFilter = Depends(),
+            # sort: GenreSortFilter = Depends(),
             pagination: PaginationFilter = Depends(),
-    ) -> List[Genre] | None:
+    ) -> list[Genre] | None:
         s = Search()
         query = s
         query_body = paginate_es_query(
-            query=query, page_size=pagination.page_size, page_number=pagination.page_number
+            query=query,
+            page_size=pagination.page_size,
+            page_number=pagination.page_number
         ).to_dict()
         search = await self.elastic.search(
-            index=GENRE_INDEX_NAME, body=query_body, sort=sort._get_sort_for_elastic()
+            index=settings.genre_index_name,
+            body=query_body,
+            #sort=sort._get_sort_for_elastic() # TODO: add support for this in index or remove sort
         )
         items = [Genre(**hit['_source']) for hit in search['hits']['hits']]
         return items
 
 
 @lru_cache()
-def get_genre_service(elastic: AsyncElasticsearch = Depends(get_elastic)) -> GenreService:
+def get_genre_service(
+        elastic: AsyncElasticsearch = Depends(get_elastic)
+) -> GenreService:
     return GenreService(elastic)

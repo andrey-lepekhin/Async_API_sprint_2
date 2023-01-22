@@ -12,7 +12,7 @@ from ps_to_es import (es_create_genre_index, es_create_person_index,
                       es_create_show_index, generate_actions,
                       generate_genre_actions, generate_person_actions)
 from psycopg2.extras import RealDictCursor
-from settings import GENRE_INDEX_NAME, PERSON_INDEX_NAME, SHOW_INDEX_NAME, dsl
+from settings import settings
 from sqlite_functions import get_lsl_from_sqlite, save_to_sqlite
 
 logger = logging.getLogger(__name__)
@@ -23,14 +23,16 @@ logger.addHandler(logging.StreamHandler())
 @my_backoff()
 def etl_cycle():
     """Класс запуска ETL-цикла"""
-    es_client = Elasticsearch(hosts=os.environ.get('ES_HOST', 'http://elasticsearch:9200'))
-    pg_connection = psycopg2.connect(**dsl, cursor_factory=RealDictCursor)
+    es_client = Elasticsearch(
+        hosts=settings.elastic_dsn
+    )
+    pg_connection = psycopg2.connect(dsn=settings.postgres_dsn, cursor_factory=RealDictCursor)
     try:
         while True:
             main(
                 pg_connection=pg_connection,
                 es_client=es_client,
-                sqlite_db_path=os.environ.get('SQLITE_DB_PATH'),
+                sqlite_db_path=os.environ.get('SQLITE_DB_PATH', 'movies_dmp.sql'),
                 frequency=int(os.environ.get('TIME_LOOP', 60)),
             )
     finally:
@@ -41,7 +43,11 @@ def etl_cycle():
 
 
 @my_backoff()
-def main(pg_connection: psycopg2.extensions.connection, es_client: Elasticsearch, sqlite_db_path: str, frequency: int):
+def main(
+        pg_connection: psycopg2.extensions.connection,
+        es_client: Elasticsearch,
+        sqlite_db_path: str, frequency: int
+):
     """
     Метод переноса измененных данных из PG в индекс Elasticsearch
 
@@ -56,7 +62,8 @@ def main(pg_connection: psycopg2.extensions.connection, es_client: Elasticsearch
     )
     logger.info(f'Последняя загрузка: {last_successful_load}')
 
-    time_since = (datetime.datetime.now(datetime.timezone.utc) - last_successful_load).total_seconds()
+    time_since = (datetime.datetime.now(datetime.timezone.utc) -
+                  last_successful_load).total_seconds()
     if time_since < frequency:
         logger.info(f'Последний пул был {frequency} секунд назад. Скоро начнется новый')
         time.sleep(frequency - time_since)
@@ -80,7 +87,7 @@ def main(pg_connection: psycopg2.extensions.connection, es_client: Elasticsearch
         es_create_show_index(es_client)
         streaming_blk_shows = streaming_bulk(
             client=es_client,
-            index=SHOW_INDEX_NAME,
+            index=settings.show_index_name,
             actions=generate_actions(pg_cursor, last_successful_load),
             max_retries=100,
             initial_backoff=0.1,
@@ -90,7 +97,7 @@ def main(pg_connection: psycopg2.extensions.connection, es_client: Elasticsearch
         es_create_genre_index(es_client)
         streaming_blk_genres = streaming_bulk(
             client=es_client,
-            index=GENRE_INDEX_NAME,
+            index=settings.genre_index_name,
             actions=generate_genre_actions(pg_cursor, last_successful_load),
             max_retries=100,
             initial_backoff=0.1,
@@ -100,7 +107,7 @@ def main(pg_connection: psycopg2.extensions.connection, es_client: Elasticsearch
         es_create_person_index(es_client)
         streaming_blk_persons = streaming_bulk(
             client=es_client,
-            index=PERSON_INDEX_NAME,
+            index=settings.person_index_name,
             actions=generate_person_actions(pg_cursor, last_successful_load),
             max_retries=100,
             initial_backoff=0.1,

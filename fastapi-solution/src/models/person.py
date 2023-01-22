@@ -1,13 +1,12 @@
 from typing import Union
 
-from pydantic import UUID4
-
 from models.filters import BaseSortFilter
 from models.mixins import BaseModelMixin
+from pydantic import UUID4
 
 
 class Person(BaseModelMixin):
-    id: Union[UUID4, str]  # TODO: Redis.set fails if this is just UUID4, fix it?
+    id: Union[UUID4, str]
     full_name: str | None = None
 
 

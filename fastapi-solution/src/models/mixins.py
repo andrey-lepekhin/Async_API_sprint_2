@@ -3,7 +3,7 @@ from pydantic import BaseModel, Field
 
 
 def orjson_dumps(v, *, default):
-    # orjson.dumps возвращает bytes, а pydantic требует unicode, поэтому декодируем
+    # декодируем, чтобы возвращать unicode для pydantic
     return orjson.dumps(v, default=default).decode()
 
 
