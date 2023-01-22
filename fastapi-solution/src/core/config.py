@@ -1,3 +1,4 @@
+import logging
 import os
 from logging import config as logging_config
 
@@ -16,6 +17,8 @@ PROJECT_NAME = os.getenv('PROJECT_NAME', 'Movies')
 # Настройки Redis
 REDIS_HOST = os.getenv('REDIS_HOST')
 REDIS_PORT = int(os.getenv('REDIS_PORT', 6379))
+
+LOG_LEVEL = logging.DEBUG
 
 # Настройки Elasticsearch
 ELASTIC_HOST = os.getenv('ELASTIC_HOST')

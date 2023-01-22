@@ -3,13 +3,9 @@ import logging
 import sqlite3
 from contextlib import contextmanager
 
-from db_query import (
-    create_a_table,
-    delete_old_states,
-    last_success_load_time,
-    insert_last_successful_load_time
-)
 from backoff import db_error_handler
+from db_query import (create_a_table, delete_old_states,
+                      insert_last_successful_load_time, last_success_load_time)
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)

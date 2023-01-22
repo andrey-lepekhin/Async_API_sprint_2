@@ -1,5 +1,5 @@
 """United API router for v1"""
-from api.v1 import shows, genres, persons
+from api.v1 import genres, persons, shows
 from fastapi import APIRouter
 
 api_router = APIRouter()

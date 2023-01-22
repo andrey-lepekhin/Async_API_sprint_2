@@ -1,8 +1,8 @@
+import logging
 import sqlite3
 from functools import wraps
 from time import sleep
 from typing import Any
-import logging
 
 import psycopg2
 

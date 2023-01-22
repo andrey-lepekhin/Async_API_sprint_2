@@ -1,6 +1,6 @@
 FROM python:3.10
 
-WORKDIR /fastapi-solution
+WORKDIR /etl
 
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
@@ -12,4 +12,4 @@ RUN pip3 install --upgrade pip \
 
 COPY . .
 
-CMD python fastapi-solution/src/etl/postgres_to_es/load_data.py
+CMD python etl/postgres_to_es/load_data.py
