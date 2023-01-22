@@ -2,6 +2,7 @@ from typing import Union
 
 from models.filters import BaseSortFilter
 from models.mixins import BaseModelMixin
+from pydantic import UUID4
 
 
 class Person(BaseModelMixin):
