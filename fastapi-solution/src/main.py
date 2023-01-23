@@ -1,5 +1,3 @@
-import os
-
 import uvicorn
 from api.v1.api import api_router as api_router_v1
 from core.config import settings
@@ -44,8 +42,8 @@ app.include_router(api_router_v1, prefix=settings.api_v1_base_route)
 if __name__ == '__main__':
     uvicorn.run(
         'main:app',
-        host=os.environ.get('SERVER_HOST'),
-        port=int(os.environ.get('SERVER_PORT')),
+        host=settings.gunicorn_bind_host,
+        port=settings.gunicorn_bind_port,
         log_config=settings.logging_config,
         log_level=settings.log_level,
     )
