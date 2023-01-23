@@ -1,4 +1,5 @@
 import logging
+import os
 from logging import config as logging_config
 
 from core.logger import LOGGING
@@ -21,6 +22,9 @@ class Settings(BaseSettings):
 
     log_level: int = logging.DEBUG
     logging_config: dict = LOGGING
+
+    host = os.environ.get('SERVER_HOST')
+    port = int(os.environ.get('SERVER_PORT'))
 
     api_v1_base_route: str = '/api/v1'
 
