@@ -1,7 +1,6 @@
 # Адрес репозитория:
 https://github.com/andrey-lepekhin/Async_API_sprint_2/
 
-
 <h1 align="center">Hi there, We are 13`th Team!
 <img src="https://github.com/blackcater/blackcater/raw/main/images/Hi.gif" height="32"/></h1>
 
