@@ -22,8 +22,8 @@ class Settings(BaseSettings):
     log_level: int = logging.DEBUG
     logging_config: dict = LOGGING
 
-    server_host: str
-    server_port: str
+    gunicorn_bind_host: str
+    gunicorn_bind_port: str
 
     api_v1_base_route: str = '/api/v1'
 
