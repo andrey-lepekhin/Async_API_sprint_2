@@ -1,10 +1,9 @@
 import logging
-import os
 from logging import config as logging_config
 
 from core.logger import LOGGING
 from dotenv import find_dotenv
-from pydantic import BaseSettings, Field, RedisDsn
+from pydantic import BaseSettings, RedisDsn
 
 # Применяем настройки логирования
 logging_config.dictConfig(LOGGING)
@@ -23,8 +22,8 @@ class Settings(BaseSettings):
     log_level: int = logging.DEBUG
     logging_config: dict = LOGGING
 
-    host = os.environ.get('SERVER_HOST')
-    port = int(os.environ.get('SERVER_PORT'))
+    server_host: str
+    server_port: str
 
     api_v1_base_route: str = '/api/v1'
 

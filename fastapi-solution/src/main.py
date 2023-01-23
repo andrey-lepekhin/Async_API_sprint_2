@@ -1,5 +1,3 @@
-import os
-
 import uvicorn
 from api.v1.api import api_router as api_router_v1
 from core.config import settings
