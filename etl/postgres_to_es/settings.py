@@ -6,9 +6,7 @@ class Settings(BaseSettings):
     postgres_dsn: PostgresDsn  # E.g. 'postgres://user:pass@localhost:5432/foobar'
     elastic_dsn: str
 
-    show_index_name: str = 'shows'
-    genre_index_name: str = 'genres'
-    person_index_name: str = 'persons'
+    indexes: list = ['shows', 'genres', 'persons']
 
     es_common_index_settings: dict = {
         'refresh_interval': '1s',

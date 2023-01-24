@@ -23,9 +23,7 @@ logger.addHandler(logging.StreamHandler())
 @my_backoff()
 def etl_cycle():
     """Класс запуска ETL-цикла"""
-    es_client = Elasticsearch(
-        hosts=settings.elastic_dsn
-    )
+    es_client = Elasticsearch(hosts=settings.elastic_dsn)
     pg_connection = psycopg2.connect(dsn=settings.postgres_dsn, cursor_factory=RealDictCursor)
     try:
         while True:
@@ -33,13 +31,16 @@ def etl_cycle():
                 pg_connection=pg_connection,
                 es_client=es_client,
                 sqlite_db_path=os.environ.get('SQLITE_DB_PATH', 'movies_dmp.sql'),
-                frequency=int(os.environ.get('TIME_LOOP', 60)),
+                frequency=int(os.environ.get('TIME_LOOP', 100)),
             )
     finally:
-        logger.info("Разрыв соединения Elasticsearch")
-        es_client.transport.close()
-        logger.info("Разрыв соединения Postgres")
-        pg_connection.close()
+        close_es_postgres(es_client, pg_connection)
+
+
+def close_es_postgres(es_client, pg_connection):
+    es_client.transport.close()
+    pg_connection.close()
+    return logger.info("Разрыв соединения Elasticsearch и Postgres")
 
 
 @my_backoff()
@@ -83,58 +84,40 @@ def main(
         # Размер состояния, которое будет передано в Elastic
         pg_cursor.itersize = int(os.environ.get('BULK_SIZE', 1000))
 
-        logger.info('Создание индекса shows')
-        es_create_show_index(es_client)
-        streaming_blk_shows = streaming_bulk(
-            client=es_client,
-            index=settings.show_index_name,
-            actions=generate_actions(pg_cursor, last_successful_load),
-            max_retries=100,
-            initial_backoff=0.1,
-            max_backoff=10,
-        )
+        create_indexes_defs = {
+            'shows': generate_genre_actions(pg_cursor, last_successful_load),
+            'persons': generate_person_actions(pg_cursor, last_successful_load),
+            'genres': generate_genre_actions(pg_cursor, last_successful_load)
+        }
 
-        es_create_genre_index(es_client)
-        streaming_blk_genres = streaming_bulk(
-            client=es_client,
-            index=settings.genre_index_name,
-            actions=generate_genre_actions(pg_cursor, last_successful_load),
-            max_retries=100,
-            initial_backoff=0.1,
-            max_backoff=10,
-        )
+        for index in settings.indexes:
+            logger.info(f'Создание индекса {index}')
+            create_indexes(client=es_client, index=index, create_indexes_defs=create_indexes_defs)
 
-        es_create_person_index(es_client)
-        streaming_blk_persons = streaming_bulk(
-            client=es_client,
-            index=settings.person_index_name,
-            actions=generate_person_actions(pg_cursor, last_successful_load),
-            max_retries=100,
-            initial_backoff=0.1,
-            max_backoff=10,
-        )
-
-        i = 0
-        for ok, response in streaming_blk_shows:
-            if not ok:
-                logger.error('Ошибка при передаче данных shows')
-            logger.debug(response)
-            i += 1
-        for ok, response in streaming_blk_genres:
-            if not ok:
-                logger.error('Ошибка при передаче данных genres')
-            logger.debug(response)
-            i += 1
-        for ok, response in streaming_blk_persons:
-            if not ok:
-                logger.error('Ошибка при передаче данных persons')
-            logger.debug(response)
-            i += 1
         etl_successful = True
 
-    if etl_successful:
-        logger.info(f'Перенос завершен успешно. Проведена {i} операция')
     save_to_sqlite(start_time, etl_successful, sqlite_db_path)
+
+
+def create_indexes(client, index, create_indexes_defs):
+    i = 0
+    streaming_blk_index = streaming_bulk(
+        client=client,
+        index=index,
+        actions=create_indexes_defs[index],
+        max_retries=100,
+        initial_backoff=0.1,
+        max_backoff=10,
+    )
+    for ok, response in streaming_blk_index:
+        if not ok:
+            return logger.error(f'Ошибка при передаче данных {index}')
+        logger.debug(response)
+        i += 1
+    etl_successful = True
+    if etl_successful:
+        return logger.info(f'Перенос завершен успешно. Проведена {i} операция')
+    return logger.info(f'Индекс {index} создан, но перенесены не все данные')
 
 
 if __name__ == '__main__':
