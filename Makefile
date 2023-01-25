@@ -1,10 +1,11 @@
 first_run:
 	#Команда для первого запуска
 	cp .env.example .env
+	cp .env.example .docker.env
 	docker-compose -f docker-compose.yml -f docker-compose.etl.yml up --build -d
 
 run:
-	#Команда для сборки и запуска контейнеров
+	#Команда для запуска контейнеров в фоне
 	docker-compose -f docker-compose.yml -f docker-compose.etl.yml up -d
 
 generate_data:
@@ -43,6 +44,5 @@ run_docker_tests_interactive:
 
 run_docker_test_containers:
 	# Build and spin up main services, and run all tests in background
-	cp .env.example tests/.env
 	unzip -o ./tests/functional/testdata/indexes_snapshot.zip -d ./tests/functional/testdata/
 	docker-compose -f docker-compose.yml -f tests/docker-compose.yml up --build -d

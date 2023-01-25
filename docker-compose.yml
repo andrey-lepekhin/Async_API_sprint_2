@@ -29,7 +29,7 @@ services:
       - elasticsearch
       - redis
     env_file:
-      - .env
+      - .docker.env
     ports:
       - "8000"
 

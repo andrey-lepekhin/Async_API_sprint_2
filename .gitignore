@@ -116,3 +116,4 @@ cython_debug/
 # PyCharm
 .idea/
 /tests/functional/testdata/test_repo/
+/.docker.env

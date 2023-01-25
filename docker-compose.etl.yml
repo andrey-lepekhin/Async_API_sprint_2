@@ -8,7 +8,7 @@ services:
     container_name: postgres
     image: postgres:15
     env_file:
-      - .env
+      - .docker.env
     volumes:
       - postgres_data:/var/lib/postgresql/data/
       - ./etl/postgres_to_es/movies_dmp.sql:/docker-entrypoint-initdb.d/movies_dmp.sql
@@ -36,7 +36,7 @@ services:
       context: .
       dockerfile: etl/postgres_to_es/Dockerfile
     env_file:
-      - .env
+      - .docker.env
     restart: unless-stopped
     depends_on:
       - elasticsearch
