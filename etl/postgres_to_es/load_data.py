@@ -81,6 +81,10 @@ def main(
         # Размер состояния, которое будет передано в Elastic
         pg_cursor.itersize = settings.bulk_size
 
+        es_create_show_index(es_client)
+        es_create_genre_index(es_client)
+        es_create_person_index(es_client)
+
         create_indexes_defs = {
             'shows': generate_genre_actions(pg_cursor, last_successful_load),
             'persons': generate_person_actions(pg_cursor, last_successful_load),
