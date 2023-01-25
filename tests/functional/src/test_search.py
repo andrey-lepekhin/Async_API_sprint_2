@@ -1,6 +1,8 @@
-import pytest
-from tests.functional.settings import test_settings
 import asyncio
+
+import pytest
+
+from tests.functional.settings import test_settings
 
 
 @pytest.mark.asyncio

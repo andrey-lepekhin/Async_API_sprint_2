@@ -1,11 +1,14 @@
 """Fixtures"""
+import asyncio
+from dataclasses import dataclass
+
+import aiohttp
 import pytest
 from elasticsearch import AsyncElasticsearch, Elasticsearch
-from tests.functional.settings import test_settings
-import aiohttp
-from dataclasses import dataclass
 from multidict import CIMultiDictProxy
-import asyncio
+
+from tests.functional.settings import test_settings
+
 
 @pytest.fixture(scope="session")
 def event_loop():

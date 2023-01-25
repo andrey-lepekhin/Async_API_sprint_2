@@ -1,5 +1,6 @@
-from pydantic import BaseSettings, RedisDsn, Field
 from dotenv import find_dotenv
+from pydantic import BaseSettings, Field, RedisDsn
+
 
 class EsIndexes(BaseSettings):
     show_index_name: str = 'shows'
