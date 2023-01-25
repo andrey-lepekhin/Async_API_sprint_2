@@ -30,24 +30,21 @@ def etl_cycle():
             main(
                 pg_connection=pg_connection,
                 es_client=es_client,
-                sqlite_db_path=os.environ.get('SQLITE_DB_PATH', 'movies_dmp.sql'),
-                frequency=int(os.environ.get('TIME_LOOP', 100)),
+                sqlite_db_path=settings.sqlite_db_path,
+                frequency=settings.time_loop
             )
     finally:
-        close_es_postgres(es_client, pg_connection)
-
-
-def close_es_postgres(es_client, pg_connection):
-    es_client.transport.close()
-    pg_connection.close()
-    return logger.info("Разрыв соединения Elasticsearch и Postgres")
+        es_client.transport.close()
+        pg_connection.close()
+        return logger.info("Разрыв соединения Elasticsearch и Postgres")
 
 
 @my_backoff()
 def main(
         pg_connection: psycopg2.extensions.connection,
         es_client: Elasticsearch,
-        sqlite_db_path: str, frequency: int
+        sqlite_db_path: str,
+        frequency: int
 ):
     """
     Метод переноса измененных данных из PG в индекс Elasticsearch
@@ -82,7 +79,7 @@ def main(
         logger.debug(pg_cursor.fetchone())
         pg_cursor = pg_connection.cursor()
         # Размер состояния, которое будет передано в Elastic
-        pg_cursor.itersize = int(os.environ.get('BULK_SIZE', 1000))
+        pg_cursor.itersize = settings.bulk_size
 
         create_indexes_defs = {
             'shows': generate_genre_actions(pg_cursor, last_successful_load),
@@ -92,14 +89,16 @@ def main(
 
         for index in settings.indexes:
             logger.info(f'Создание индекса {index}')
-            create_indexes(client=es_client, index=index, create_indexes_defs=create_indexes_defs)
+            filling_indexes_with_data(client=es_client, index=index, create_indexes_defs=create_indexes_defs)
 
         etl_successful = True
 
     save_to_sqlite(start_time, etl_successful, sqlite_db_path)
 
 
-def create_indexes(client, index, create_indexes_defs):
+def filling_indexes_with_data(
+        client, index, create_indexes_defs
+):
     i = 0
     streaming_blk_index = streaming_bulk(
         client=client,
