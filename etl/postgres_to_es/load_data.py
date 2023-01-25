@@ -86,7 +86,7 @@ def main(
         es_create_person_index(es_client)
 
         create_indexes_defs = {
-            'shows': generate_genre_actions(pg_cursor, last_successful_load),
+            'shows': generate_actions(pg_cursor, last_successful_load),
             'persons': generate_person_actions(pg_cursor, last_successful_load),
             'genres': generate_genre_actions(pg_cursor, last_successful_load)
         }
