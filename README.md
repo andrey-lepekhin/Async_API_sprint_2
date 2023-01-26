@@ -32,7 +32,7 @@ make generate_data
 ```
 Will generate and add 1 mln fake persons, 100 fake genres and 400 000 fake shows. It will take up 10 minutes and ~1 GB of space.
 
-### To stop all dockers containers
+### To stop all docker containers
 ```
 make stop
 ```
