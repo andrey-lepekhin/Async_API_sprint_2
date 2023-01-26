@@ -2,7 +2,7 @@ first_run:
 	#Команда для первого запуска
 	cp .env.example .env
 	cp .docker.env.example .docker.env
-	cp .env.example tests/.env
+	cp .env.example_test tests/.env
 	cp .docker.env.example tests/.docker.env
 	docker-compose -f docker-compose.yml -f docker-compose.etl.yml up --build -d
 
