@@ -19,7 +19,6 @@ FastAPI docs are available at [http://127.0.0.1/api/openapi](http://127.0.0.1/ap
 
 ## Run tests
 ### Locally
-Create .env from .env.example and change hosts to 127.0.0.1  
 `make run_docker_test_containers`
 Wait ~20 sec for spin up  
 `pytest /tests`
