@@ -4,11 +4,18 @@ from pydantic import BaseSettings, PostgresDsn
 
 class Settings(BaseSettings):
     postgres_dsn: PostgresDsn  # E.g. 'postgres://user:pass@localhost:5432/foobar'
+
+    bulk_size: int
+    time_loop: int
+    sqlite_db_path: str
+
     elastic_dsn: str
 
     show_index_name: str = 'shows'
     genre_index_name: str = 'genres'
     person_index_name: str = 'persons'
+
+    indexes: list = [show_index_name, genre_index_name, person_index_name]
 
     es_common_index_settings: dict = {
         'refresh_interval': '1s',
