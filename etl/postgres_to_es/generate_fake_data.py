@@ -4,11 +4,12 @@ import random
 from elasticsearch import Elasticsearch
 from elasticsearch.helpers import streaming_bulk
 from faker import Faker
+from tqdm import tqdm
+
 from load_data import (es_create_genre_index, es_create_person_index,
                        es_create_show_index)
 from ps_to_es import EsDataclass, EsDataclassGenre, EsDataclassPerson
 from settings import settings
-from tqdm import tqdm
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
