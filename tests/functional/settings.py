@@ -1,5 +1,5 @@
 from dotenv import find_dotenv
-from pydantic import BaseSettings, Field, RedisDsn
+from pydantic import BaseSettings, RedisDsn
 
 
 class EsIndexes(BaseSettings):
@@ -12,6 +12,7 @@ class EsIndexes(BaseSettings):
         genre_index_name,
         person_index_name,
     ]
+
 
 class EsBackup(BaseSettings):
     repo_name: str = 'test_repo'
@@ -26,6 +27,7 @@ class Elastic(BaseSettings):
 class Redis(BaseSettings):
     # Настройки Redis
     redis_dsn: RedisDsn = 'redis://127.0.0.1:6379'
+
 
 class TestSettings(EsIndexes, EsBackup, Elastic, Redis, BaseSettings):
     api_service_url: str = 'http://0.0.0.0:8000'
