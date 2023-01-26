@@ -37,7 +37,7 @@ async def shutdown():
     await elastic.es.close()
 
 
-app.include_router(api_router_v1, prefix=settings.api_v1_base_route)
+app.include_router(api_router_v1, prefix=settings.api_v1_base_path)
 
 if __name__ == '__main__':
     uvicorn.run(
