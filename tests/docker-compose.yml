@@ -14,7 +14,6 @@ services:
       - "8000:8000"
     entrypoint: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
 
-  tests:
-    build: ./tests/
-    depends_on:
-      - async_api
+  redis:
+    ports:
+      - "6379:6379"

@@ -20,6 +20,7 @@ def event_loop():
     yield loop
     loop.close()
 
+
 @dataclass
 class HTTPResponse:
     status: int
@@ -32,6 +33,7 @@ async def aiohttp_client_session():
     session = aiohttp.ClientSession()
     yield session
     await session.close()
+
 
 @pytest.fixture
 def aiohttp_get(aiohttp_client_session):
@@ -48,17 +50,20 @@ def aiohttp_get(aiohttp_client_session):
 
     return inner
 
+
 @pytest.fixture(scope='session')
 async def es_async_client():
     client = AsyncElasticsearch(hosts=test_settings.elastic_dsn, ignore_status=[400,404])
     yield client
     await client.close()
 
+
 @pytest.fixture(scope='session')
 def es_client():
     client = Elasticsearch(hosts=test_settings.elastic_dsn, ignore_status=[400,404])
     yield client
     client.close()
+
 
 @pytest.fixture
 def make_es_repo(es_client):
@@ -73,6 +78,7 @@ def make_es_repo(es_client):
         }
     }
     es_client.snapshot.create_repository(repository=test_settings.repo_name, body=snapshot_body)
+
 
 @pytest.fixture
 def make_indexes_snapshot(make_es_repo, es_client):
@@ -98,6 +104,7 @@ def make_indexes_snapshot(make_es_repo, es_client):
     index_body = {"indices": ','.join(test_settings.index_names)}
     es_client.snapshot.create(repository=test_settings.repo_name, snapshot=test_settings.snapshot_name, body=index_body)
 
+
 @pytest.fixture
 def es_with_fresh_indexes(make_es_repo, es_client):
     def _restore_indexes():
@@ -115,7 +122,3 @@ def es_with_fresh_indexes(make_es_repo, es_client):
 
     _restore_indexes()
     return 'ok'
-    # yield
-    # _restore_indexes()
-
-
