@@ -1,5 +1,8 @@
 from abc import ABC, abstractmethod
 from elasticsearch import AsyncElasticsearch, NotFoundError
+from models.genre import Genre
+from models.person import Person
+from models.show import Show
 
 
 class BaseService(ABC):
@@ -12,7 +15,8 @@ class BaseService(ABC):
     async def get_by_id(
             self,
             id: str,
-    ): #TODO: how to implement method return type hint here? -> self.single_item_model doesn't work
+    ) -> None | list[Genre] | list[Person] | list[Show]:
+        #TODO: how to implement a better method return type hint here? -> self.single_item_model doesn't work
         """
         Get a single self.single_item_model type item by its id from self.index_name index in Elastic.
         :param id:
