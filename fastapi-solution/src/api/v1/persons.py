@@ -17,13 +17,11 @@ class SinglePersonAPIResponse(BaseModel):
     full_name: str | None = None
 
 
-# Pydantic supports the creation of generic models
 @router.get('', response_model=list[Person] | None)
 @router.get('/search', response_model=list[Person] | None)
 @cache(expire=settings.cache_expiration_in_seconds)
 async def person_list(
         query_filter: QueryFilter = Depends(),
-        # person_sort_filter: PersonSortFilter = Depends(),
         pagination_filter: PaginationFilter = Depends(),
         person_service: PersonService = Depends(get_person_service),
 ) -> list[Person] | None:
@@ -37,7 +35,6 @@ async def person_list(
     """
     items = await person_service.get_many_with_query_filter_sort_pagination(
         query=query_filter,
-        # sort=person_sort_filter,
         pagination=pagination_filter,
     )
     return items

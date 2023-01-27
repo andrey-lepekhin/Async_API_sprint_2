@@ -8,25 +8,15 @@ from fastapi import Depends
 from models.filters import PaginationFilter, QueryFilter
 from models.show import Show, ShowGenreFilter, ShowSortFilter
 from services.utils import paginate_es_query
+from services.base import BaseService
 
 
-class ShowService:
+class ShowService(BaseService):
     def __init__(self, elastic: AsyncElasticsearch):
-        self.elastic = elastic
+        super().__init__(elastic)
+        self.single_item_model = Show
+        self.index_name = settings.service_index_map['show']
 
-    async def get_by_id(self, show_id: str) -> Show | None:
-        """
-        Gets a single show by its ID from ES.
-        :param show_id: id
-        :return: Show | None
-        """
-        try:
-            doc = await self.elastic.get(
-                index=settings.show_index_name, id=show_id
-            )
-        except NotFoundError:
-            return None
-        return Show(**doc['_source'])
 
     async def get_many_with_query_filter_sort_pagination(
             self,
