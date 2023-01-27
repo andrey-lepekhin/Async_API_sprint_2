@@ -57,7 +57,7 @@ async def test_persons_cache_expiration(
     assert response.body['id'] == person_id
 
     await es_async_client.delete(index=test_settings.person_index_name, id=person_id)
-    sleep(70)
+    sleep(20)
 
     with pytest.raises(KeyError):
         response = await aiohttp_get(endpoint)
