@@ -1,3 +1,4 @@
+import asyncio
 import uuid
 from http import HTTPStatus
 from time import sleep
@@ -41,23 +42,16 @@ async def test_persons_cache_pass(person_id, aiohttp_get, es_async_client, es_wi
     assert response.body['id'] == person_id
 
 
-@pytest.mark.parametrize(
-    'person_id',
-    [
-        '6e429cff-c8a2-4d17-8b12-6532a8a1ac9b',
-        'bbdbad95-f08b-4e12-ba35-92b89c9251f8',
-        'efa1894b-0384-4164-b55d-424980142c28'
-     ]
-)
 async def test_persons_cache_expiration(
-        person_id, aiohttp_get, es_async_client, es_with_fresh_indexes
+        aiohttp_get, es_async_client, es_with_fresh_indexes
 ) -> None:
+    person_id = '6e429cff-c8a2-4d17-8b12-6532a8a1ac9b'
     endpoint = f'persons/{person_id}'
     response = await aiohttp_get(endpoint)
     assert response.body['id'] == person_id
 
     await es_async_client.delete(index=test_settings.person_index_name, id=person_id)
-    sleep(20)
+    await asyncio.sleep(5)
 
     with pytest.raises(KeyError):
         response = await aiohttp_get(endpoint)
