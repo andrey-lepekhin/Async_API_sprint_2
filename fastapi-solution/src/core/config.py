@@ -14,6 +14,12 @@ class EsIndexes(BaseSettings):
     genre_index_name: str = 'genres'
     person_index_name: str = 'persons'
 
+    service_index_map = {
+        'show': show_index_name,
+        'genre': genre_index_name,
+        'person': person_index_name,
+    }
+
 
 class Elastic(BaseSettings):
     # Настройки Elasticsearch

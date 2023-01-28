@@ -6,4 +6,3 @@ services:
     env_file:
       - .env
       - .docker.env
-      - ./tests/.cache.env

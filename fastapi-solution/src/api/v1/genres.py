@@ -22,7 +22,6 @@ class SingleGenreAPIResponse(BaseModel):
 @router.get('', response_model=list[Genre] | None)
 @cache(expire=settings.cache_expiration_in_seconds)
 async def genre_list(
-        # genre_sort_filter: GenreSortFilter = Depends(),
         pagination_filter: PaginationFilter = Depends(),
         genre_service: GenreService = Depends(get_genre_service),
 ) -> list[Genre] | None:
@@ -33,8 +32,7 @@ async def genre_list(
     :param genre_service: genre service
     :return: list[Genre] | None
     """
-    items = await genre_service.get_many_with_filter_sort_pagination(
-        # sort=genre_sort_filter,
+    items = await genre_service.get_many_with_query_filter_sort_pagination(
         pagination=pagination_filter,
     )
     return items

@@ -8,30 +8,21 @@ from fastapi import Depends
 from models.filters import PaginationFilter, QueryFilter
 from models.person import Person, PersonSortFilter
 from services.utils import paginate_es_query
+from services.base import BaseService
 
 
-class PersonService:
+class PersonService(BaseService):
     def __init__(self, elastic: AsyncElasticsearch):
-        self.elastic = elastic
+        super().__init__(elastic)
+        self.single_item_model = Person
+        self.index_name = settings.service_index_map['person']
 
-    async def get_by_id(self, person_id: str) -> Person | None:
-        """
-        Gets a single person by its ID from ES.
-        :param person_id: id
-        :return: Person | None
-        """
-        try:
-            doc = await self.elastic.get(
-                index=settings.person_index_name, id=person_id
-            )
-        except NotFoundError:
-            return None
-        return Person(**doc['_source'])
 
     async def get_many_with_query_filter_sort_pagination(
             self,
             query: QueryFilter = Depends(),
-            # sort: PersonSortFilter = Depends(),
+            filter=None,
+            sort=None,
             pagination: PaginationFilter = Depends(),
     ) -> list[Person] | None:
         s = Search()
@@ -52,7 +43,6 @@ class PersonService:
         search = await self.elastic.search(
             index=settings.person_index_name,
             body=query_body,
-            # sort=sort._get_sort_for_elastic() # TODO: add support for this in index or remove sort
         )
         items = [Person(**hit['_source']) for hit in search['hits']['hits']]
         return items

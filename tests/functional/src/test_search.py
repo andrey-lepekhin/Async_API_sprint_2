@@ -10,6 +10,7 @@ async def test_shows_search(aiohttp_get, es_with_fresh_indexes) -> None:
     response = await aiohttp_get(endpoint, query_data)
     assert response.status == 200
     assert response.body[0]['id'] == '05d7341e-e367-4e2e-acf5-4652a8435f93'
+    #TODO: don't hardcode id but get random items from elastic
 
 
 @pytest.mark.parametrize(

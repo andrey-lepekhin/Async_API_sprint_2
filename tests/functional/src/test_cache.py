@@ -19,6 +19,18 @@ async def test_shows_show_id_cache(aiohttp_get, es_async_client, es_with_fresh_i
     assert response.body['id'] == show_id
 
 
+async def test_persons_cache_pass(aiohttp_get, es_async_client, es_with_fresh_indexes) -> None:
+    person_id = '6e429cff-c8a2-4d17-8b12-6532a8a1ac9b'
+    endpoint = f'persons/{person_id}'
+    response = await aiohttp_get(endpoint)
+    assert response.body['id'] == person_id
+
+    await es_async_client.delete(index=test_settings.person_index_name, id=person_id)
+
+    response = await aiohttp_get(endpoint)
+    assert response.body['id'] == person_id
+
+
 async def test_genres_cache_pass(aiohttp_get, es_async_client, es_with_fresh_indexes) -> None:
     genre_id = '526769d7-df18-4661-9aa6-49ed24e9dfd8'
     endpoint = f'genres/{genre_id}'
@@ -29,6 +41,22 @@ async def test_genres_cache_pass(aiohttp_get, es_async_client, es_with_fresh_ind
 
     response = await aiohttp_get(endpoint)
     assert response.body['id'] == genre_id
+
+
+async def test_persons_cache_expiration(
+        aiohttp_get, es_async_client, es_with_fresh_indexes
+) -> None:
+    person_id = '6e429cff-c8a2-4d17-8b12-6532a8a1ac9b'
+    endpoint = f'persons/{person_id}'
+    response = await aiohttp_get(endpoint)
+    assert response.body['id'] == person_id
+
+    await es_async_client.delete(index=test_settings.person_index_name, id=person_id)
+    await asyncio.sleep(5)
+
+    with pytest.raises(KeyError):
+        response = await aiohttp_get(endpoint)
+        assert response.body['id'] == person_id
 
 
 async def test_genres_cache_expiration(
