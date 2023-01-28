@@ -3,7 +3,6 @@ first_run:
 	cp .env.example .env
 	cp .docker.env.example .docker.env
 	cp .docker.env.example tests/.docker.env
-	cp .env.cache.example tests/.cache.env
 	docker-compose -f docker-compose.yml -f docker-compose.etl.yml up --build -d
 
 run:

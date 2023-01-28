@@ -6,4 +6,5 @@ services:
     env_file:
       - .env
       - .docker.env
-      - ./tests/.cache.env
+    environment:
+      - CACHE_EXPIRATION_IN_SECONDS=1
