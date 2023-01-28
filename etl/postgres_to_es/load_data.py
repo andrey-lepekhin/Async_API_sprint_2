@@ -92,7 +92,7 @@ def main(
         }
 
         for index in settings.indexes:
-            logger.info(f'Создание индекса {index}')
+            logger.info(f'Заполнение индекса {index} данными')
             filling_indexes_with_data(client=es_client, index=index, create_indexes_defs=create_indexes_defs)
 
         etl_successful = True

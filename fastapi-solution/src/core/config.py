@@ -25,6 +25,7 @@ class Elastic(BaseSettings):
     # Настройки Elasticsearch
     elastic_dsn: str
 
+
 class Redis(BaseSettings):
     # Настройки Redis
     redis_dsn: RedisDsn
@@ -33,8 +34,6 @@ class Redis(BaseSettings):
 class Settings(EsIndexes, Elastic, Redis, BaseSettings):
     # Название проекта. Используется в Swagger-документации
     project_name: str = 'Practix'
-
-
 
     log_level: int = logging.DEBUG
     logging_config: dict = LOGGING
