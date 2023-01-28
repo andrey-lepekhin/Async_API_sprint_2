@@ -12,7 +12,10 @@ from tests.functional.settings import test_settings
 
 @pytest.fixture(scope="session")
 def event_loop():
-    """A hack from https://stackoverflow.com/a/72104554/196171 prevents 'RuntimeError: Event loop is closed'"""
+    """
+    Redefining Pytest default function-scoped event_loop fixture.
+    A hack from https://stackoverflow.com/a/72104554/196171 prevents 'RuntimeError: Event loop is closed'
+    """
     try:
         loop = asyncio.get_running_loop()
     except RuntimeError:
