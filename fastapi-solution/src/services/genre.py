@@ -4,6 +4,7 @@ from core.config import settings
 from db.elastic import get_elastic
 from elasticsearch import AsyncElasticsearch, NotFoundError
 from elasticsearch_dsl import Search
+from elasticsearch_dsl.query import MultiMatch
 from fastapi import Depends
 from models.filters import PaginationFilter
 from models.genre import Genre, GenreSortFilter
@@ -26,9 +27,17 @@ class GenreService(BaseService):
             pagination: PaginationFilter = Depends(),
     ) -> list[Genre] | None:
         s = Search()
-        query = s
+        es_query = s
+        if query.query:
+            es_query = es_query.query(
+                MultiMatch(
+                    query=query.query,
+                    fields=["name^2", "description^1"],
+                    fuzziness=settings.search_fuzziness
+                )
+            )
         query_body = paginate_es_query(
-            query=query,
+            query=es_query,
             page_size=pagination.page_size,
             page_number=pagination.page_number
         ).to_dict()

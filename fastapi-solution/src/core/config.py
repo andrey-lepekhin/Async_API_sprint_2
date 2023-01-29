@@ -24,6 +24,7 @@ class EsIndexes(BaseSettings):
 class Elastic(BaseSettings):
     # Настройки Elasticsearch
     elastic_dsn: str
+    search_fuzziness: int | str = 'AUTO'  # Will break search tests if changed
 
 
 class Redis(BaseSettings):

@@ -4,6 +4,7 @@ from core.config import settings
 from db.elastic import get_elastic
 from elasticsearch import AsyncElasticsearch, NotFoundError
 from elasticsearch_dsl import Search
+from elasticsearch_dsl.query import MultiMatch
 from fastapi import Depends
 from models.filters import PaginationFilter, QueryFilter
 from models.person import Person, PersonSortFilter
@@ -29,11 +30,11 @@ class PersonService(BaseService):
         es_query = s
         if query.query:
             es_query = es_query.query(
-                "multi_match",
-                query=query.query,
-                fields=[
-                    'full_name',
-                ]
+                MultiMatch(
+                    query=query.query,
+                    fields=['full_name'],
+                    fuzziness=settings.search_fuzziness
+                )
             )
         query_body = paginate_es_query(
             query=es_query,
