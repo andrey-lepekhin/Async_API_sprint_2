@@ -30,6 +30,20 @@ class BaseSortFilter(BaseModel):
 
         allowed_field_names = cls.Config.allowed_filter_field_names
 
+        # E.g. sort=+-imdb_rating
+        if value.count('-') + value.count('+') > 1:
+            raise HTTPException(
+                HTTPStatus.BAD_REQUEST, f"You tried to sort by '{value}'. "
+                                        "Only one sort order, - or + is allowed, you tried to use more than one."
+            )
+
+        # E.g. sort=imdb_rating-
+        if value[1:].count('-') + value[1:].count('+') > 0:
+            raise HTTPException(
+                HTTPStatus.BAD_REQUEST, f"You tried to sort by '{value}'. "
+                                        f"Sort order is allowed only at start of field name. E.g +{allowed_field_names[0]}"
+            )
+
         field_name = value.replace("+", "").replace("-", "")
         if field_name not in allowed_field_names:
             raise HTTPException(
