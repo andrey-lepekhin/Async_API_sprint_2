@@ -13,7 +13,7 @@ async def test_shows_root(aiohttp_get, es_with_fresh_indexes) -> None:
     assert len(response.body) == 10
 
 
-async def test_shows_concrete_show(aiohttp_get, es_with_fresh_indexes) -> None:
+async def test_shows_get_concrete_show(aiohttp_get, es_with_fresh_indexes) -> None:
     show_id = '00af52ec-9345-4d66-adbe-50eb917f463a'
     endpoint = f'shows/{show_id}'
     response = await aiohttp_get(endpoint)
