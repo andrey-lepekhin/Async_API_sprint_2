@@ -2,12 +2,12 @@ from functools import lru_cache
 
 from core.config import settings
 from db.elastic import get_elastic
-from elasticsearch import AsyncElasticsearch, NotFoundError
+from elasticsearch import AsyncElasticsearch
 from elasticsearch_dsl import Search
 from elasticsearch_dsl.query import MultiMatch
 from fastapi import Depends
 from models.filters import PaginationFilter
-from models.genre import Genre, GenreSortFilter
+from models.genre import Genre
 from services.utils import paginate_es_query
 from services.base import BaseService
 
@@ -26,8 +26,7 @@ class GenreService(BaseService):
             filter=None,
             pagination: PaginationFilter = Depends(),
     ) -> list[Genre] | None:
-        s = Search()
-        es_query = s
+        es_query = Search()
         if query.query:
             es_query = es_query.query(
                 MultiMatch(

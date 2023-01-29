@@ -2,7 +2,7 @@ from functools import lru_cache
 
 from core.config import settings
 from db.elastic import get_elastic
-from elasticsearch import AsyncElasticsearch, NotFoundError
+from elasticsearch import AsyncElasticsearch
 from elasticsearch_dsl import Q, Search
 from elasticsearch_dsl.query import MultiMatch
 from fastapi import Depends
@@ -26,10 +26,9 @@ class ShowService(BaseService):
             sort: ShowSortFilter = Depends(),
             pagination: PaginationFilter = Depends(),
     ) -> list[Show] | None:
-        s = Search()
-        es_query = s
+        es_query = Search()
         if filter_genre.genre_id:
-            es_query = s.filter(
+            es_query = es_query.filter(
                 'nested',
                 path='genres',
                 query=Q('term', genres__id=filter_genre.genre_id)
