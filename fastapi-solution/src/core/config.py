@@ -30,6 +30,7 @@ class Elastic(BaseSettings):
 class Redis(BaseSettings):
     # Настройки Redis
     redis_dsn: RedisDsn
+    cache_expiration_in_seconds: int
 
 
 class Settings(EsIndexes, Elastic, Redis, BaseSettings):
@@ -43,8 +44,6 @@ class Settings(EsIndexes, Elastic, Redis, BaseSettings):
     gunicorn_bind_port: str
 
     api_v1_base_path: str = '/api/v1'
-
-    cache_expiration_in_seconds: int
 
 
 settings = Settings(_env_file=find_dotenv(), _env_file_encoding='utf-8')

@@ -77,6 +77,3 @@ async def test_genres_cache_expiration(
     with pytest.raises(KeyError):
         response = await aiohttp_get(endpoint)
         assert response.body['id'] == genre_id
-
-#TODO: someday: test cache invalidation
-#TODO: in tasks 5, 6, 7, 8: add cache testing for all endpoints.
