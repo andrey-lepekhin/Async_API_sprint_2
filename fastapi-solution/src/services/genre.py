@@ -8,7 +8,7 @@ from elasticsearch_dsl.query import MultiMatch
 from fastapi import Depends
 from models.filters import PaginationFilter
 from models.genre import Genre
-from services.utils import paginate_es_query
+from services.utils import paginate_es_query, catch_es_not_found
 from services.base import BaseService
 
 
@@ -18,7 +18,7 @@ class GenreService(BaseService):
         self.single_item_model = Genre
         self.index_name = settings.service_index_map['genre']
 
-
+    @catch_es_not_found
     async def get_many_with_query_filter_sort_pagination(
             self,
             query=None,

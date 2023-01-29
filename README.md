@@ -12,25 +12,19 @@ Teamwork of
 
 ## How to run
 ```
-make first_run  # will create .env files from examples and launch containers
+make first_run  # will create .env files from examples, build and launch containers
 ```
-Wait ~1 min for building and ETL to spin up.  
+After building wait ~1 min for ETL to spin up and fill the database.  
 FastAPI docs are available at [http://127.0.0.1/api/openapi](http://127.0.0.1/api/openapi)
 
 ## Run tests
-### Locally
-`make run_docker_test_containers`
-Wait ~20 sec for spin up  
-`pytest /tests`
-
 ### In Docker
 `make run_docker_tests_interactive`
 
-### Generate fake data
-```
-make generate_data
-```
-Will generate and add 1 mln fake persons, 100 fake genres and 400 000 fake shows. It will take up 10 minutes and ~1 GB of space.
+### Locally
+* `make run_docker_test_containers` (wait ~20 sec for spin up)
+* Use venv or other ways to install tests/requirements.txt
+* `pytest .` 
 
 ### To stop all docker containers
 ```
@@ -46,6 +40,12 @@ make etl                - etl container console
 make redis              - redis container console
 make shows_async        - async-container console
 ```
+
+## Generate fake data
+```
+make generate_data
+```
+Will generate and add 1 mln fake persons, 100 fake genres and 400 000 fake shows. It will take up ~10 minutes and ~1 GB of space.
 
 
 Have a nice day :)
