@@ -4,6 +4,7 @@ from core.config import settings
 from db.elastic import get_elastic
 from elasticsearch import AsyncElasticsearch
 from elasticsearch_dsl import Q, Search
+from elasticsearch_dsl.query import MultiMatch
 from fastapi import Depends
 from models.filters import PaginationFilter, QueryFilter
 from models.show import Show, ShowGenreFilter, ShowSortFilter
@@ -26,25 +27,25 @@ class ShowService(BaseService):
             sort: ShowSortFilter = Depends(),
             pagination: PaginationFilter = Depends(),
     ) -> list[Show] | None:
-        s = Search()
-        es_query = s
+        es_query = Search()
         if filter_genre.genre_id:
-            es_query = s.filter(
+            es_query = es_query.filter(
                 'nested',
                 path='genres',
                 query=Q('term', genres__id=filter_genre.genre_id)
             )
         if query.query:
-            es_query = es_query.query(
-                "multi_match",
+            es_query = es_query.query(MultiMatch(
                 query=query.query,
-                fields=[
-                    'title^5',
+                fields=[  # Changes here will break search tests
+                    'title^10',
                     'description^4',
                     'actors_names^3',
                     'director^2',
                     'writers_names^1',
-                ]
+                ],
+                fuzziness=settings.search_fuzziness
+            )
             )
         query_body = paginate_es_query(
             query=es_query,

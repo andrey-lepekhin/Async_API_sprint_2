@@ -4,8 +4,8 @@ from typing import Union
 from core.config import settings
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi_cache.decorator import cache
-from models.filters import PaginationFilter
-from models.genre import Genre, GenreSortFilter
+from models.filters import PaginationFilter, QueryFilter
+from models.genre import Genre
 from pydantic import UUID4, BaseModel
 from services.genre import GenreService, get_genre_service
 
@@ -20,8 +20,10 @@ class SingleGenreAPIResponse(BaseModel):
 
 # Pydantic supports the creation of generic models
 @router.get('', response_model=list[Genre] | None)
+@router.get('/search', response_model=list[Genre] | None)
 @cache(expire=settings.cache_expiration_in_seconds)
 async def genre_list(
+        query_filter: QueryFilter = Depends(),
         pagination_filter: PaginationFilter = Depends(),
         genre_service: GenreService = Depends(get_genre_service),
 ) -> list[Genre] | None:
@@ -33,6 +35,7 @@ async def genre_list(
     :return: list[Genre] | None
     """
     items = await genre_service.get_many_with_query_filter_sort_pagination(
+        query=query_filter,
         pagination=pagination_filter,
     )
     return items

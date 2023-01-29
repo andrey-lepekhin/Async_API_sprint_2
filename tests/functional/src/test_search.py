@@ -6,34 +6,27 @@ import pytest
 pytestmark = pytest.mark.asyncio
 
 
-async def test_shows_search(aiohttp_get, es_with_fresh_indexes) -> None:
-    endpoint = 'shows/search'
-    query_data = {'query': 'The Star'}
-    response = await aiohttp_get(endpoint, query_data)
-    assert response.status == HTTPStatus.OK
-    assert response.body[0]['id'] == '05d7341e-e367-4e2e-acf5-4652a8435f93'
-    #TODO: don't hardcode id but get random items from elastic
-
-
 @pytest.mark.parametrize(
-    'endpoint, query_data, id_index',
+    'endpoint, search_query, num_results, first_result_id',
     [
-        ('persons/search', {'query': 'Václav Vorlícek'}, '6e429cff-c8a2-4d17-8b12-6532a8a1ac9b')
+        ('shows', 'star', 100, '05d7341e-e367-4e2e-acf5-4652a8435f93'),
+        ('shows', 'Star Trek: Phoenix - No Other Medicine', 100, '64733f2b-136d-4ed3-90d6-92d63247c6b0'),
+        ('shows', pytest.strange_unicode_str, 0, None),
+        ('persons', 'Václav Vorlícek', 3, '6e429cff-c8a2-4d17-8b12-6532a8a1ac9b'),
+        ('persons', pytest.strange_unicode_str, 0, None),
+        ('genres', 'western', 1, '0b105f87-e0a5-45dc-8ce7-f8632088f390'),
+        ('genres', 'westerm', 1, '0b105f87-e0a5-45dc-8ce7-f8632088f390'),
+        ('genres', pytest.strange_unicode_str, 0, None),
      ]
 )
-async def test_search_person(endpoint, query_data, id_index, aiohttp_get, es_with_fresh_indexes) -> None:
+async def test_search_endpoints(endpoint, search_query, num_results, first_result_id, aiohttp_get, es_with_fresh_indexes):
+    endpoint = f'{endpoint}/search'
+    query_data = {'page[size]': 100}
+    if search_query:
+        query_data['query'] = search_query
+
     response = await aiohttp_get(endpoint, query_data)
     assert response.status == HTTPStatus.OK
-    assert response.body[0]['id'] == id_index
-
-
-@pytest.mark.parametrize(
-    'endpoint, id_index',
-    [
-        ('genres', 'eb7212a7-dd10-4552-bf7b-7a505a8c0b95')
-     ]
-)
-async def test_search_genre(endpoint, id_index, aiohttp_get, es_with_fresh_indexes) -> None:
-    response = await aiohttp_get(f'{endpoint}/{id_index}')
-    assert response.status == HTTPStatus.OK
-    assert response.body['id'] == id_index
+    assert len(response.body) == num_results
+    if first_result_id:
+        assert response.body[0]['id'] == first_result_id

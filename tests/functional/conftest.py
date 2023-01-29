@@ -10,6 +10,10 @@ from multidict import CIMultiDictProxy
 from tests.functional.settings import test_settings
 
 
+def pytest_configure():
+    pytest.strange_unicode_str = '\uFFFF~𝘈Ḇ𝖢𝕯٤ḞԍНǏ𝙅ƘԸⲘ𝙉০Ρ𝗤Ɍ𝓢ȚЦ𝒱Ѡ𝓧ƳȤѧᖯć𝗱ễ𝑓𝙜Ⴙ𝞲𝑗𝒌ļṃŉо𝞎𝒒ᵲꜱ𝙩ừ𝗏ŵ𝒙𝒚ź���!@#$%^&*()大-_=+[{]};:'
+
+
 @pytest.fixture(scope="session")
 def event_loop():
     """
