@@ -8,7 +8,7 @@ from elasticsearch_dsl.query import MultiMatch
 from fastapi import Depends
 from models.filters import PaginationFilter, QueryFilter
 from models.person import Person
-from services.utils import paginate_es_query, catch_es_not_found
+from services.utils import paginate_es_query
 from services.base import BaseService
 
 
@@ -19,7 +19,6 @@ class PersonService(BaseService):
         self.index_name = settings.service_index_map['person']
 
 
-    @catch_es_not_found
     async def get_many_with_query_filter_sort_pagination(
             self,
             query: QueryFilter = Depends(),
