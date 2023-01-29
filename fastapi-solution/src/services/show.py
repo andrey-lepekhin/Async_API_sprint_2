@@ -18,7 +18,6 @@ class ShowService(BaseService):
         self.single_item_model = Show
         self.index_name = settings.service_index_map['show']
 
-
     async def get_many_with_query_filter_sort_pagination(
             self,
             query: QueryFilter = Depends(),
