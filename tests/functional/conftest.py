@@ -56,14 +56,14 @@ def aiohttp_get(aiohttp_client_session):
 
 @pytest.fixture(scope='session')
 async def es_async_client():
-    client = AsyncElasticsearch(hosts=test_settings.elastic_dsn, ignore_status=[400,404])
+    client = AsyncElasticsearch(hosts=test_settings.elastic_dsn, ignore_status=[400, 404])
     yield client
     await client.close()
 
 
 @pytest.fixture(scope='session')
 def es_client():
-    client = Elasticsearch(hosts=test_settings.elastic_dsn, ignore_status=[400,404])
+    client = Elasticsearch(hosts=test_settings.elastic_dsn, ignore_status=[400, 404])
     yield client
     client.close()
 
