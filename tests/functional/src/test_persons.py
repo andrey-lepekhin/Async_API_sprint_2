@@ -27,7 +27,7 @@ async def test_persons_non_existing(person_id, aiohttp_get, es_with_fresh_indexe
     assert response.status == HTTPStatus.NOT_FOUND
 
 
-async def test_persons_pagination(aiohttp_get, es_with_fresh_indexes) -> None:
+async def test_check_persons_on_different_page_size(aiohttp_get, es_with_fresh_indexes) -> None:
     endpoint = 'persons'
     page_size = 16
     query_data = {
@@ -36,15 +36,13 @@ async def test_persons_pagination(aiohttp_get, es_with_fresh_indexes) -> None:
     }
     response = await aiohttp_get(endpoint, query_data)
     assert response.status == HTTPStatus.OK
-    # Check that page[size] parameter changes number of shows per page
     assert len(response.body) == page_size
 
-    # Check that there are different shows on different pages
-    show_on_first_page = response.body[0]
+    person_on_first_page = response.body[0]
     query_data['page[number]'] += 1
     response = await aiohttp_get(endpoint, query_data)
     assert response.status == HTTPStatus.OK
-    assert show_on_first_page not in response.body
+    assert person_on_first_page not in response.body
 
 
 async def test_search_person(aiohttp_get, es_with_fresh_indexes, es_client) -> None:
