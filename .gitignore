@@ -117,3 +117,4 @@ cython_debug/
 .idea/
 /tests/functional/testdata/test_repo/
 /.docker.env
+/tests/functional/testdata/indexes_snapshot.zip
