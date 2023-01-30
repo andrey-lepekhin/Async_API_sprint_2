@@ -1,15 +1,20 @@
 from functools import lru_cache
 
-from core.config import settings
-from db.elastic import get_elastic
 from elasticsearch import AsyncElasticsearch
+
+from core.config import settings
 from elasticsearch_dsl import Search
 from elasticsearch_dsl.query import MultiMatch
 from fastapi import Depends
+
+from db.elastic import ESearch
 from models.filters import PaginationFilter
 from models.genre import Genre
 from services.utils import paginate_es_query
 from services.base import BaseService
+
+
+es = ESearch()
 
 
 class GenreService(BaseService):
@@ -49,6 +54,6 @@ class GenreService(BaseService):
 
 @lru_cache()
 def get_genre_service(
-        elastic: AsyncElasticsearch = Depends(get_elastic)
+        elastic: ESearch = Depends(es.get_elastic)
 ) -> GenreService:
-    return GenreService(elastic)
+    return GenreService(elastic)  # type: ignore

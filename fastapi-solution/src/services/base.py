@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from elasticsearch import AsyncElasticsearch, NotFoundError
+
 from models.genre import Genre
 from models.person import Person
 from models.show import Show

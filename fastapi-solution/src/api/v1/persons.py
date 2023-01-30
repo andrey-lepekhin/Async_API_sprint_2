@@ -29,7 +29,7 @@ async def person_list(
     Gets a list of persons.
     :param query_filter:
     :param person_service: service
-    :param person_sort_filter: person filter
+    :param query_filter: person filter
     :param pagination_filter: pagination filter
     :return: list[Person] | None
     """

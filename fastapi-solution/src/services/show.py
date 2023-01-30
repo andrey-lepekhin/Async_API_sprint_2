@@ -1,8 +1,9 @@
 from functools import lru_cache
 
-from core.config import settings
-from db.elastic import get_elastic
 from elasticsearch import AsyncElasticsearch
+
+from core.config import settings
+from db.elastic import ESearch
 from elasticsearch_dsl import Q, Search
 from elasticsearch_dsl.query import MultiMatch
 from fastapi import Depends
@@ -10,6 +11,9 @@ from models.filters import PaginationFilter, QueryFilter
 from models.show import Show, ShowGenreFilter, ShowSortFilter
 from services.utils import paginate_es_query
 from services.base import BaseService
+
+
+es = ESearch()
 
 
 class ShowService(BaseService):
@@ -62,6 +66,6 @@ class ShowService(BaseService):
 
 @lru_cache()
 def get_show_service(
-        elastic: AsyncElasticsearch = Depends(get_elastic)
+        elastic: ESearch = Depends(es.get_elastic)
 ) -> ShowService:
-    return ShowService(elastic)
+    return ShowService(elastic)  # type: ignore
