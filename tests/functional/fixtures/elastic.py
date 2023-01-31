@@ -50,3 +50,32 @@ def make_es_repo(es_client):
         }
     }
     es_client.snapshot.create_repository(repository=test_settings.repo_name, body=snapshot_body)
+
+
+@pytest.fixture
+def make_indexes_snapshot(make_es_repo, es_client):
+    """
+    Is called manually when you want to create a new snapshot to use in tests.
+    You might want to use it if you've changed index structure or contents.
+
+    1. Start test ES with `environment: - 'path.repo=/tmp/test_repo/'`
+    2. Make indexes and fill them (e.g. with ETL)
+    3. Make repo and snapshot with this function
+    4. `make elasticsearch` and go into container
+    5. `cd /tmp``zip -r indexes_snapshot.zip test_repo` exit container shell
+    6. copy file to host `docker cp elasticsearch:/tmp/indexes_snapshot.zip .`, move it to /testdata in repo
+    All this in an attempt to isolate test data and not depend on ETL process for it.
+    There's gotta be a better way...
+
+    TODO: make `make` command for setting this up
+    :param make_es_repo:
+    :param es_client:
+    :return:
+    """
+
+    index_body = {"indices": ','.join(test_settings.index_names)}
+    es_client.snapshot.create(
+        repository=test_settings.repo_name,
+        snapshot=test_settings.snapshot_name,
+        body=index_body
+    )
