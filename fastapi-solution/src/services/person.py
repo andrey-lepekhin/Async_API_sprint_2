@@ -1,6 +1,7 @@
 from functools import lru_cache
 
 from core.config import settings
+from db.base import AsyncFulltextSearch
 from db.elastic import get_async_search
 from elasticsearch import AsyncElasticsearch
 from fastapi import Depends
@@ -10,8 +11,8 @@ from services.base import BaseService
 
 
 class PersonService(BaseService):
-    def __init__(self, elastic: AsyncElasticsearch):
-        super().__init__(elastic)
+    def __init__(self, async_search_db: AsyncFulltextSearch):
+        self.async_search_db = async_search_db
         self.single_item_model = Person
         self.index_name = settings.service_index_map['person']
 
@@ -41,6 +42,6 @@ class PersonService(BaseService):
 
 @lru_cache()
 def get_person_service(
-        elastic: AsyncElasticsearch = Depends(get_async_search)
+        async_search_db: AsyncFulltextSearch = Depends(get_async_search)
 ) -> PersonService:
-    return PersonService(elastic)
+    return PersonService(async_search_db)
