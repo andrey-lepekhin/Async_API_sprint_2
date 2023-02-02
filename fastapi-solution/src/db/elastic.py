@@ -36,8 +36,7 @@ class AsyncESearch(AsyncFulltextSearch):
         return query[start: start + page_size]
 
     async def get_many_with_query_filter_sort_pagination(
-            self, query, index_filter,
-            sort, pagination, fields
+            self, query, index_filter, sort, pagination, fields
     ):
         es_query = Search()
         if index_filter.genre_id:

@@ -28,8 +28,6 @@ class ShowService(BaseService):
             pagination: PaginationFilter = Depends(),
             fields=None
     ) -> list[Show] | None:
-        if fields is None:
-            fields = ['title^10', 'description^4', 'actors_names^3', 'director^2', 'writers_names^1']
         items = await self.async_search_db.get_many_with_query_filter_sort_pagination(
             query, index_filter, sort, pagination, fields
         )

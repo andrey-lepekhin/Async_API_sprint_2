@@ -38,7 +38,11 @@ async def show_list(
         query=query_filter,
         index_filter=show_genre_filter,
         sort=show_sort_filter,
-        pagination=pagination_filter
+        pagination=pagination_filter,
+        fields=[
+            'title^10', 'description^4', 'actors_names^3',
+            'director^2', 'writers_names^1'
+        ]
     )
     return items
 

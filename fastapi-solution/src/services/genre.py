@@ -31,8 +31,6 @@ class GenreService(BaseService):
             pagination: PaginationFilter = Depends(),
             fields=None
     ) -> list[Genre] | None:
-        if fields is None:
-            fields = ["name^2", "description^1"]
         items = await self.async_search_db.get_many_with_query_filter_sort_pagination(
             query, index_filter, sort, pagination, fields
         )

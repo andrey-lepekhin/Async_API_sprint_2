@@ -5,7 +5,7 @@ from core.config import settings
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi_cache.decorator import cache
 from models.filters import PaginationFilter, QueryFilter
-from models.person import Person, PersonSortFilter
+from models.person import Person
 from pydantic import UUID4, BaseModel
 from services.person import PersonService, get_person_service
 
@@ -35,7 +35,8 @@ async def person_list(
     """
     items = await person_service.get_many_with_query_filter_sort_pagination(
         query=query_filter,
-        pagination=pagination_filter
+        pagination=pagination_filter,
+        fields=['full_name']
     )
     return items
 

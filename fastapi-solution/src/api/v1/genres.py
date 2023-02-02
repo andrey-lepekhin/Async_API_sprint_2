@@ -30,13 +30,14 @@ async def genre_list(
     """
     Gets a list of genres.
     :param pagination_filter: pagination filter
-    :param genre_sort_filter: genre filter
+    :param query_filter: genre filter
     :param genre_service: genre service
     :return: list[Genre] | None
     """
     items = await genre_service.get_many_with_query_filter_sort_pagination(
         query=query_filter,
-        pagination=pagination_filter
+        pagination=pagination_filter,
+        fields=["name^2", "description^1"]
     )
     return items
 

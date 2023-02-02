@@ -31,8 +31,6 @@ class PersonService(BaseService):
             pagination: PaginationFilter = Depends(),
             fields=None
     ) -> list[Person] | None:
-        if fields is None:
-            fields = ['full_name']
         items = await self.async_search_db.get_many_with_query_filter_sort_pagination(
             query, index_filter, sort, pagination, fields
         )
