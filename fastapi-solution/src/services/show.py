@@ -66,6 +66,6 @@ class ShowService(BaseService):
 
 @lru_cache()
 def get_show_service(
-        elastic: ESearch = Depends(es.get_elastic)
+        elastic: ESearch = Depends(es.get)
 ) -> ShowService:
     return ShowService(elastic)  # type: ignore

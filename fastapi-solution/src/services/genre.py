@@ -54,6 +54,6 @@ class GenreService(BaseService):
 
 @lru_cache()
 def get_genre_service(
-        elastic: ESearch = Depends(es.get_elastic)
+        elastic: ESearch = Depends(es.get)
 ) -> GenreService:
     return GenreService(elastic)  # type: ignore

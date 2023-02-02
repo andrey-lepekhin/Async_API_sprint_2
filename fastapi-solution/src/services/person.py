@@ -54,6 +54,6 @@ class PersonService(BaseService):
 
 @lru_cache()
 def get_person_service(
-        elastic: ESearch = Depends(es.get_elastic)
+        elastic: ESearch = Depends(es.get)
 ) -> PersonService:
     return PersonService(elastic)  # type: ignore
