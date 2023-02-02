@@ -6,21 +6,16 @@ from core.config import settings
 
 es: AsyncFulltextSearch | None = None
 
+
 async def get_async_search() -> AsyncFulltextSearch:
     return es
 
+
 class AsyncESearch(AsyncFulltextSearch):
-    def __init__(
-            self,
-            db: AsyncElasticsearch,
-    ):
+    def __init__(self, db: AsyncElasticsearch):
         self.db = db
 
-    async def get_by_id(
-            self,
-            index: str,
-            id: str,
-    ):
+    async def get_by_id(self, index: str, id: str):
         """
         Get a single item by its id from index in Elastic.
         :param index:
@@ -28,49 +23,33 @@ class AsyncESearch(AsyncFulltextSearch):
         :return:
         """
         try:
-            doc = await self.db.get(
-                index=index,
-                id=id,
-            )
+            doc = await self.db.get(index=index, id=id)
         except NotFoundError:
             return None
         return doc['_source']
 
     @classmethod
     def _paginate_es_query(
-            self,
-            query: Search,
-            page_size: int,
-            page_number: int,
+            self, query: Search, page_size: int, page_number: int
     ) -> Search:
         start = (page_number - 1) * page_size
         return query[start: start + page_size]
 
-
     async def get_many_with_query_filter_sort_pagination(
-            self,
-            query,
-            filters,
-            sort,
-            pagination,
+            self, query, index_filter,
+            sort, pagination, fields
     ):
         es_query = Search()
-        if filters.genre_id:
+        if index_filter.genre_id:
             es_query = es_query.filter(
                 'nested',
                 path='genres',
-                query=Q('term', genres__id=filters.genre_id)
+                query=Q('term', genres__id=index_filter.genre_id)
             )
         if query.query:
             es_query = es_query.query(MultiMatch(
                 query=query.query,
-                fields=[  # Changes here will break search tests
-                    'title^10',
-                    'description^4',
-                    'actors_names^3',
-                    'director^2',
-                    'writers_names^1',
-                ],
+                fields=fields,
                 fuzziness=settings.search_fuzziness
             )
             )

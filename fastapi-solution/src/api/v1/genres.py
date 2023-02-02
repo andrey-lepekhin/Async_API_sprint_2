@@ -36,7 +36,7 @@ async def genre_list(
     """
     items = await genre_service.get_many_with_query_filter_sort_pagination(
         query=query_filter,
-        pagination=pagination_filter,
+        pagination=pagination_filter
     )
     return items
 

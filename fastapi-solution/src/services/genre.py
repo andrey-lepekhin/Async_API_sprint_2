@@ -3,12 +3,9 @@ from functools import lru_cache
 from core.config import settings
 from db.elastic import get_async_search
 from elasticsearch import AsyncElasticsearch
-from elasticsearch_dsl import Search
-from elasticsearch_dsl.query import MultiMatch
 from fastapi import Depends
 from models.filters import PaginationFilter
 from models.genre import Genre
-from services.utils import paginate_es_query
 from services.base import BaseService
 
 
@@ -18,33 +15,30 @@ class GenreService(BaseService):
         self.single_item_model = Genre
         self.index_name = settings.service_index_map['genre']
 
+    async def get_by_id(self, id: str) -> Genre | None:
+        item = await self.async_search_db.get_by_id(
+            self.index_name, id
+        )
+        if item:
+            return self.single_item_model(**item)
+        return None
+
     async def get_many_with_query_filter_sort_pagination(
             self,
             query=None,
             sort=None,
-            filter=None,
+            index_filter=None,
             pagination: PaginationFilter = Depends(),
+            fields=None
     ) -> list[Genre] | None:
-        es_query = Search()
-        if query.query:
-            es_query = es_query.query(
-                MultiMatch(
-                    query=query.query,
-                    fields=["name^2", "description^1"],
-                    fuzziness=settings.search_fuzziness
-                )
-            )
-        query_body = paginate_es_query(
-            query=es_query,
-            page_size=pagination.page_size,
-            page_number=pagination.page_number
-        ).to_dict()
-        search = await self.elastic.search(
-            index=settings.genre_index_name,
-            body=query_body,
+        if fields is None:
+            fields = ["name^2", "description^1"]
+        items = await self.async_search_db.get_many_with_query_filter_sort_pagination(
+            query, index_filter, sort, pagination, fields
         )
-        items = [Genre(**hit['_source']) for hit in search['hits']['hits']]
-        return items
+        if items:
+            return [Genre(**item) for item in items]
+        return []
 
 
 @lru_cache()

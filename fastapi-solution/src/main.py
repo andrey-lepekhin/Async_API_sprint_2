@@ -5,11 +5,13 @@ from api.v1.api import api_router as api_router_v1
 from core.config import settings
 from db import redis, elastic
 from elasticsearch import AsyncElasticsearch, NotFoundError
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
 from fastapi_cache import FastAPICache
 from fastapi_cache.backends.redis import RedisBackend
 from redis import asyncio as aioredis
+
+from db.redis import RedisStorage
 
 app = FastAPI(
     title=settings.project_name,
@@ -43,8 +45,9 @@ async def shutdown():
 
 app.include_router(api_router_v1, prefix=settings.api_v1_base_path)
 
+
 @app.exception_handler(NotFoundError)
-async def es_not_found_exception_handler(request: Request, exc: NotFoundError):
+async def es_not_found_exception_handler(exc: NotFoundError):
     return ORJSONResponse(
         status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
         content={"message": f"Index not found. If you're testing, you should create or restore indexes first.\n{exc}"},
