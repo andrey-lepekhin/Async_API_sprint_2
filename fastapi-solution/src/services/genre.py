@@ -1,7 +1,7 @@
 from functools import lru_cache
 
 from core.config import settings
-from db.elastic import get_elastic
+from db.elastic import get_async_search
 from elasticsearch import AsyncElasticsearch
 from elasticsearch_dsl import Search
 from elasticsearch_dsl.query import MultiMatch
@@ -49,6 +49,6 @@ class GenreService(BaseService):
 
 @lru_cache()
 def get_genre_service(
-        elastic: AsyncElasticsearch = Depends(get_elastic)
+        elastic: AsyncElasticsearch = Depends(get_async_search)
 ) -> GenreService:
     return GenreService(elastic)

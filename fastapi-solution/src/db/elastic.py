@@ -1,7 +1,91 @@
-from elasticsearch import AsyncElasticsearch
+from elasticsearch import AsyncElasticsearch, NotFoundError
+from db.base import AsyncFulltextSearch
+from elasticsearch_dsl import Q, Search
+from elasticsearch_dsl.query import MultiMatch
+from core.config import settings
 
-es: AsyncElasticsearch | None = None
+es: AsyncFulltextSearch | None = None
 
-
-async def get_elastic() -> AsyncElasticsearch:
+async def get_async_search() -> AsyncFulltextSearch:
     return es
+
+class AsyncESearch(AsyncFulltextSearch):
+    def __init__(
+            self,
+            db: AsyncElasticsearch,
+    ):
+        self.db = db
+
+    async def get_by_id(
+            self,
+            index: str,
+            id: str,
+    ):
+        """
+        Get a single item by its id from index in Elastic.
+        :param index:
+        :param id:
+        :return:
+        """
+        try:
+            doc = await self.db.get(
+                index=index,
+                id=id,
+            )
+        except NotFoundError:
+            return None
+        return doc['_source']
+
+    @classmethod
+    def _paginate_es_query(
+            self,
+            query: Search,
+            page_size: int,
+            page_number: int,
+    ) -> Search:
+        start = (page_number - 1) * page_size
+        return query[start: start + page_size]
+
+
+    async def get_many_with_query_filter_sort_pagination(
+            self,
+            query,
+            filters,
+            sort,
+            pagination,
+    ):
+        es_query = Search()
+        if filters.genre_id:
+            es_query = es_query.filter(
+                'nested',
+                path='genres',
+                query=Q('term', genres__id=filters.genre_id)
+            )
+        if query.query:
+            es_query = es_query.query(MultiMatch(
+                query=query.query,
+                fields=[  # Changes here will break search tests
+                    'title^10',
+                    'description^4',
+                    'actors_names^3',
+                    'director^2',
+                    'writers_names^1',
+                ],
+                fuzziness=settings.search_fuzziness
+            )
+            )
+        query_body = self._paginate_es_query(
+            query=es_query,
+            page_size=pagination.page_size,
+            page_number=pagination.page_number
+        ).to_dict()
+        search = await self.db.search(
+            index=settings.show_index_name,
+            body=query_body,
+            sort=sort._get_sort_for_elastic()
+        )
+        items = [hit['_source'] for hit in search['hits']['hits']]
+        return items
+
+    async def close(self):
+        await self.db.close()

@@ -3,14 +3,31 @@ from elasticsearch import AsyncElasticsearch, NotFoundError
 from models.genre import Genre
 from models.person import Person
 from models.show import Show
+from db.base import AsyncFulltextSearch
 
 
 class BaseService(ABC):
+    async_search_db: AsyncFulltextSearch
     index_name: str
     single_item_model: type
 
-    def __init__(self, elastic: AsyncElasticsearch):
-        self.elastic = elastic
+    @abstractmethod
+    async def get_by_id(
+            self,
+            id: str,
+    ):
+        pass
+
+    @abstractmethod
+    async def get_many_with_query_filter_sort_pagination(
+            self,
+            query,
+            filter,
+            sort,
+            pagination,
+    ):
+        pass
+
 
     async def get_by_id(
             self,
@@ -29,13 +46,3 @@ class BaseService(ABC):
         except NotFoundError:
             return None
         return self.single_item_model(**doc['_source'])
-
-    @abstractmethod
-    async def get_many_with_query_filter_sort_pagination(
-            self,
-            query,
-            filter,
-            sort,
-            pagination,
-    ):
-        pass

@@ -1,7 +1,7 @@
 from functools import lru_cache
 
 from core.config import settings
-from db.elastic import get_elastic
+from db.elastic import get_async_search
 from elasticsearch import AsyncElasticsearch
 from elasticsearch_dsl import Search
 from elasticsearch_dsl.query import MultiMatch
@@ -50,6 +50,6 @@ class PersonService(BaseService):
 
 @lru_cache()
 def get_person_service(
-        elastic: AsyncElasticsearch = Depends(get_elastic)
+        elastic: AsyncElasticsearch = Depends(get_async_search)
 ) -> PersonService:
     return PersonService(elastic)

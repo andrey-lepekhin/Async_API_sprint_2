@@ -36,7 +36,7 @@ async def show_list(
     """
     items = await show_service.get_many_with_query_filter_sort_pagination(
         query=query_filter,
-        filter_genre=show_genre_filter,
+        filters=show_genre_filter,
         sort=show_sort_filter,
         pagination=pagination_filter,
     )
