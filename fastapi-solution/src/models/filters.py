@@ -7,7 +7,7 @@ from pydantic import BaseModel, validator
 class BaseSortFilter(BaseModel):
     sort: str | None
 
-    def _get_sort_for_elastic(self):
+    def get_sort_for_elastic(self) -> list:
         # TODO: add support for list of sort fields
         sort = []
         # - descending, + ascending
@@ -84,3 +84,4 @@ class QueryFilter:
             )
     ):
         self.query = query
+        self.query_fields = []

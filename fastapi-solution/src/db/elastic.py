@@ -36,21 +36,26 @@ class AsyncESearch(AsyncFulltextSearch):
         return query[start: start + page_size]
 
     async def get_many_with_query_filter_sort_pagination(
-            self, query, index_filter, sort, pagination, fields
+            self, index: str, query, index_filter, sort, pagination
     ):
+        if sort is None:
+            sort = []
+        else:
+            sort = sort.get_sort_for_elastic()
         es_query = Search()
-        if index_filter.genre_id:
+        if index_filter and index_filter.genre_id:
             es_query = es_query.filter(
                 'nested',
                 path='genres',
                 query=Q('term', genres__id=index_filter.genre_id)
             )
         if query.query:
-            es_query = es_query.query(MultiMatch(
-                query=query.query,
-                fields=fields,
-                fuzziness=settings.search_fuzziness
-            )
+            es_query = es_query.query(
+                MultiMatch(
+                    query=query.query,
+                    fields=query.query_fields,
+                    fuzziness=settings.search_fuzziness
+                )
             )
         query_body = self._paginate_es_query(
             query=es_query,
@@ -58,9 +63,9 @@ class AsyncESearch(AsyncFulltextSearch):
             page_number=pagination.page_number
         ).to_dict()
         search = await self.db.search(
-            index=settings.show_index_name,
+            index=index,
             body=query_body,
-            sort=sort._get_sort_for_elastic()
+            sort=sort,
         )
         items = [hit['_source'] for hit in search['hits']['hits']]
         return items

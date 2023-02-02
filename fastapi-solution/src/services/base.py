@@ -17,7 +17,7 @@ class BaseService(ABC):
 
     @abstractmethod
     async def get_many_with_query_filter_sort_pagination(
-            self, query, index_filter, sort, pagination, fields
+            self, query, index_filter, sort, pagination
     ):
         pass
 

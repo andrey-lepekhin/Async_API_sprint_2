@@ -11,7 +11,6 @@ from fastapi_cache import FastAPICache
 from fastapi_cache.backends.redis import RedisBackend
 from redis import asyncio as aioredis
 
-from db.redis import RedisStorage
 
 app = FastAPI(
     title=settings.project_name,

@@ -26,10 +26,17 @@ class ShowService(BaseService):
             index_filter: ShowGenreFilter = Depends(),
             sort: ShowSortFilter = Depends(),
             pagination: PaginationFilter = Depends(),
-            fields=None
     ) -> list[Show] | None:
+        query.query_fields = [  # Changes here will break search tests
+            'title^10',
+            'description^4',
+            'actors_names^3',
+            'director^2',
+            'writers_names^1',
+        ]
+
         items = await self.async_search_db.get_many_with_query_filter_sort_pagination(
-            query, index_filter, sort, pagination, fields
+            self.index_name, query, index_filter, sort, pagination
         )
         if items:
             return [Show(**item) for item in items]

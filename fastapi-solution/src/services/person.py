@@ -30,10 +30,10 @@ class PersonService(BaseService):
             index_filter=None,
             sort=None,
             pagination: PaginationFilter = Depends(),
-            fields=None
     ) -> list[Person] | None:
+        query.query_fields = ["full_name"]  # Changes here will break search tests
         items = await self.async_search_db.get_many_with_query_filter_sort_pagination(
-            query, index_filter, sort, pagination, fields
+            self.index_name, query, index_filter, sort, pagination
         )
         if items:
             return [Person(**item) for item in items]

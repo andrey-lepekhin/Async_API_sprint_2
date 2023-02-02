@@ -39,10 +39,6 @@ async def show_list(
         index_filter=show_genre_filter,
         sort=show_sort_filter,
         pagination=pagination_filter,
-        fields=[
-            'title^10', 'description^4', 'actors_names^3',
-            'director^2', 'writers_names^1'
-        ]
     )
     return items
 
@@ -62,6 +58,6 @@ async def show_details(
     show = await show_service.get_by_id(show_id)
     if not show:
         raise HTTPException(
-            status_code=HTTPStatus.NOT_FOUND, detail='show not found'
+            status_code=HTTPStatus.NOT_FOUND, detail='Show not found'
         )
     return SingleShowAPIResponse(**show.dict())
