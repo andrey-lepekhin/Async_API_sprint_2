@@ -18,26 +18,31 @@ def es_client():
     client.close()
 
 
-@pytest.fixture
-def es_with_fresh_indexes(make_es_repo, es_client):
-    def _restore_indexes():
-        index_body = {"indices": ','.join(test_settings.index_names)}
+def _restore_indexes(make_es_repo, es_client):
+    index_body = {"indices": ','.join(test_settings.index_names)}
 
-        for index in es_client.indices.get(index='*'):
-            if index in test_settings.index_names:
-                es_client.indices.close(index=index)
+    for index in es_client.indices.get(index='*'):
+        if index in test_settings.index_names:
+            es_client.indices.close(index=index)
 
-        es_client.snapshot.restore(repository=test_settings.repo_name, snapshot=test_settings.snapshot_name, body=index_body)
+    es_client.snapshot.restore(repository=test_settings.repo_name, snapshot=test_settings.snapshot_name, body=index_body)
 
-        for index in es_client.indices.get(index='*'):
-            if index in test_settings.index_names:
-                es_client.indices.open(index=index)
+    for index in es_client.indices.get(index='*'):
+        if index in test_settings.index_names:
+            es_client.indices.open(index=index)
 
-    _restore_indexes()
+@pytest.fixture(scope='session', autouse=True)
+def set_up_es_indexes_once(make_es_repo, es_client):
+    _restore_indexes(make_es_repo, es_client)
     return 'ok'
 
-
 @pytest.fixture
+def restore_indexes_after(make_es_repo, es_client):
+    yield
+    _restore_indexes(make_es_repo, es_client)
+
+
+@pytest.fixture(scope='session')
 def make_es_repo(es_client):
     snapshot_body = {
         "type": "fs",

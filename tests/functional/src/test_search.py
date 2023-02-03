@@ -19,7 +19,7 @@ pytestmark = pytest.mark.asyncio
         ('genres', pytest.strange_unicode_str, 0, None),
      ]
 )
-async def test_search_endpoints(endpoint, search_query, num_results, first_result_id, aiohttp_get, es_with_fresh_indexes):
+async def test_search_endpoints(endpoint, search_query, num_results, first_result_id, aiohttp_get):
     endpoint = f'{endpoint}/search'
     query_data = {'page[size]': 100}
     if search_query:

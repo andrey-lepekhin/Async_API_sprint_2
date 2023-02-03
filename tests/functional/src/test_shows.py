@@ -6,14 +6,14 @@ import pytest
 pytestmark = pytest.mark.asyncio
 
 
-async def test_shows_root(aiohttp_get, es_with_fresh_indexes) -> None:
+async def test_shows_root(aiohttp_get) -> None:
     endpoint = 'shows'
     response = await aiohttp_get(endpoint)
     assert response.status == HTTPStatus.OK
     assert len(response.body) == 10
 
 
-async def test_shows_get_concrete_show(aiohttp_get, es_with_fresh_indexes) -> None:
+async def test_shows_get_concrete_show(aiohttp_get) -> None:
     show_id = '00af52ec-9345-4d66-adbe-50eb917f463a'
     endpoint = f'shows/{show_id}'
     response = await aiohttp_get(endpoint)
@@ -21,14 +21,14 @@ async def test_shows_get_concrete_show(aiohttp_get, es_with_fresh_indexes) -> No
     assert response.body['id'] == show_id
 
 
-async def test_shows_non_existing(aiohttp_get, es_with_fresh_indexes) -> None:
+async def test_shows_non_existing(aiohttp_get) -> None:
     show_id = 'not-existent-id'
     endpoint = f'shows/{show_id}'
     response = await aiohttp_get(endpoint)
     assert response.status == HTTPStatus.NOT_FOUND
 
 
-async def test_shows_pagination(aiohttp_get, es_with_fresh_indexes) -> None:
+async def test_shows_pagination(aiohttp_get) -> None:
     endpoint = 'shows'
     page_size = 16
     query_data = {
@@ -79,7 +79,7 @@ async def test_shows_pagination(aiohttp_get, es_with_fresh_indexes) -> None:
         ('Tom', '-imdb_rating', 5, 5, HTTPStatus.OK),
      ]
 )
-async def test_shows_params_validation(query, sort, page_size, page_number, response_status, aiohttp_get, es_with_fresh_indexes) -> None:
+async def test_shows_params_validation(query, sort, page_size, page_number, response_status, aiohttp_get) -> None:
     endpoint = 'shows'
     query_data = {}
     if query is not None:
