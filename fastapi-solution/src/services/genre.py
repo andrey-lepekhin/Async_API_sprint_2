@@ -31,7 +31,8 @@ class GenreService(BaseService):
             index_filter=None,
             pagination: PaginationFilter = Depends(),
     ) -> list[Genre] | None:
-        query.query_fields = ["name^2", "description^1"]  # Changes here will break search tests
+        if query:
+            query.query_fields = ["name^2", "description^1"]  # Changes here will break search tests
         items = await self.async_search_db.get_many_with_query_filter_sort_pagination(
             self.index_name, query, index_filter, sort, pagination
         )
