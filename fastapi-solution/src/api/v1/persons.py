@@ -5,7 +5,7 @@ from core.config import settings
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi_cache.decorator import cache
 from models.filters import PaginationFilter, QueryFilter
-from models.person import Person, PersonSortFilter
+from models.person import Person
 from pydantic import UUID4, BaseModel
 from services.person import PersonService, get_person_service
 

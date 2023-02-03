@@ -36,7 +36,7 @@ async def show_list(
     """
     items = await show_service.get_many_with_query_filter_sort_pagination(
         query=query_filter,
-        filter_genre=show_genre_filter,
+        index_filter=show_genre_filter,
         sort=show_sort_filter,
         pagination=pagination_filter,
     )
@@ -58,6 +58,6 @@ async def show_details(
     show = await show_service.get_by_id(show_id)
     if not show:
         raise HTTPException(
-            status_code=HTTPStatus.NOT_FOUND, detail='show not found'
+            status_code=HTTPStatus.NOT_FOUND, detail='Show not found'
         )
     return SingleShowAPIResponse(**show.dict())

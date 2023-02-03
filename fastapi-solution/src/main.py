@@ -3,13 +3,14 @@ from http import HTTPStatus
 import uvicorn
 from api.v1.api import api_router as api_router_v1
 from core.config import settings
-from db import elastic, redis
+from db import redis, elastic
 from elasticsearch import AsyncElasticsearch, NotFoundError
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
 from fastapi_cache import FastAPICache
 from fastapi_cache.backends.redis import RedisBackend
 from redis import asyncio as aioredis
+
 
 app = FastAPI(
     title=settings.project_name,
@@ -21,8 +22,10 @@ app = FastAPI(
 
 @app.on_event('startup')
 async def startup():
-    elastic.es = AsyncElasticsearch(
-        hosts=[settings.elastic_dsn]
+    elastic.es = elastic.AsyncESearch(
+        AsyncElasticsearch(
+            hosts=[settings.elastic_dsn],
+        ),
     )
     redis.redis = aioredis.from_url(
         settings.redis_dsn,
@@ -41,11 +44,12 @@ async def shutdown():
 
 app.include_router(api_router_v1, prefix=settings.api_v1_base_path)
 
+
 @app.exception_handler(NotFoundError)
-async def es_not_found_exception_handler(request: Request, exc: NotFoundError):
+async def es_not_found_exception_handler(exc: NotFoundError):
     return ORJSONResponse(
         status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
-        content={"message": f"Index not found. If you're testing, you should create or restore indexes first. {exc}"},
+        content={"message": f"Index not found. If you're testing, you should create or restore indexes first.\n{exc}"},
     )
 
 if __name__ == '__main__':

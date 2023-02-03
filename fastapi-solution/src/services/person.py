@@ -1,55 +1,48 @@
 from functools import lru_cache
 
 from core.config import settings
-from db.elastic import get_elastic
+from db.base import AsyncFulltextSearch
+from db.elastic import get_async_search
 from elasticsearch import AsyncElasticsearch
-from elasticsearch_dsl import Search
-from elasticsearch_dsl.query import MultiMatch
 from fastapi import Depends
 from models.filters import PaginationFilter, QueryFilter
 from models.person import Person
-from services.utils import paginate_es_query
 from services.base import BaseService
 
 
 class PersonService(BaseService):
-    def __init__(self, elastic: AsyncElasticsearch):
-        super().__init__(elastic)
+    def __init__(self, async_search_db: AsyncFulltextSearch):
+        self.async_search_db = async_search_db
         self.single_item_model = Person
         self.index_name = settings.service_index_map['person']
 
+    async def get_by_id(self, id: str) -> Person | None:
+        item = await self.async_search_db.get_by_id(
+            self.index_name, id
+        )
+        if item:
+            return self.single_item_model(**item)
+        return None
 
     async def get_many_with_query_filter_sort_pagination(
             self,
             query: QueryFilter = Depends(),
-            filter=None,
+            index_filter=None,
             sort=None,
             pagination: PaginationFilter = Depends(),
     ) -> list[Person] | None:
-        es_query = Search()
-        if query.query:
-            es_query = es_query.query(
-                MultiMatch(
-                    query=query.query,
-                    fields=['full_name'],
-                    fuzziness=settings.search_fuzziness
-                )
-            )
-        query_body = paginate_es_query(
-            query=es_query,
-            page_size=pagination.page_size,
-            page_number=pagination.page_number
-        ).to_dict()
-        search = await self.elastic.search(
-            index=settings.person_index_name,
-            body=query_body,
+        if query:
+            query.query_fields = ["full_name"]  # Changes here will break search tests
+        items = await self.async_search_db.get_many_with_query_filter_sort_pagination(
+            self.index_name, query, index_filter, sort, pagination
         )
-        items = [Person(**hit['_source']) for hit in search['hits']['hits']]
-        return items
+        if items:
+            return [Person(**item) for item in items]
+        return []
 
 
 @lru_cache()
 def get_person_service(
-        elastic: AsyncElasticsearch = Depends(get_elastic)
+        async_search_db: AsyncFulltextSearch = Depends(get_async_search)
 ) -> PersonService:
-    return PersonService(elastic)
+    return PersonService(async_search_db)
